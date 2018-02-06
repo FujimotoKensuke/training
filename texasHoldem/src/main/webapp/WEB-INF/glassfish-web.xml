@@ -6,5 +6,5 @@
     <property name="keepgenerated" value="true">
     </property>
   </jsp-config>
-  <parameter-encoding default-charset="UTF-8" />
+  <parameter-encoding default-charset="UTF-8"/>
 </glassfish-web-app>

@@ -1,0 +1,338 @@
+@charset "UTF-8";
+
+.lw {
+	font-size: 40px;
+	text-align: center;
+	border: 1pt solid gray;
+	margin-left: 10%;
+	margin-right: 10%;
+}
+
+.main {
+	width: 800px;
+	max-height: 600px;
+	border: 1px solid #000;
+	margin: 0 auto;
+}
+
+.sub {
+	width: 800px;
+	border: 1px solid #000;
+	margin: 0 auto;
+}
+
+.dialog {
+	width: auto;
+	font-size: 13px;
+}
+
+.dialogbuttonposition {
+	margin-top: 15px;
+	margin-left: 100px;
+}
+
+.detaildialogtextposition {
+	margin-top: 15px;
+	margin-left: 250px;
+	margin-bottom: 15px;
+
+}
+
+.detaildialogbuttonposition {
+	margin-top: 15px;
+	margin-left: 300px;
+
+}
+
+.inputposition {
+	width: 300px;
+	margin-left: 240px;
+}
+
+.inputwidth {
+	width: 150px;
+}
+
+.battlerecordposition {
+	width: 500px;
+	border: none;
+	margin-left: auto;
+	margin-right: auto;
+	margin-bottom:20px;
+	text-align: left;
+}
+
+.battlerecordmargin {
+	width: 150px;
+	margin-left: auto;
+	margin-right: auto;
+	}
+
+.buttonmargin {
+	margin-top: 10px;
+}
+
+.buttonmarginleft {
+	margin-left: 5px;
+}
+
+.messagestyle {
+	margin-left: auto;
+	margin-right: auto;
+	width: 500px;
+	font-size: 15px;
+}
+
+.gamemain {
+	color: #FFF;
+	top: 20px;
+	margin-left: auto;
+	margin-right: auto;
+	width: 1000px;
+	height: 700px;
+	background-color: #008000;
+	border: 6px solid #b7383c;
+	border-radius: 50px;
+}
+
+.contents {
+	text-align: center;
+	margin: 10px 0px 10px 0px;
+}
+
+.table {
+	margin-left: 40%;
+	font-size: 30px;
+}
+
+.recordtable{
+	margin-top: 15px;
+}
+.recordtable, .recordtable th, .recordtable td {
+	border: 1px solid #000;
+	font-size: 15px;
+}
+
+.recordtablea {
+	width: 10px;
+}
+
+.recordtableb {
+	width: 130px;
+}
+
+.recordtablec {
+	width: 65px;
+}
+
+.datelink {
+	height: 140px;
+	overflow: auto;
+}
+
+.cardimga {
+	width: 60px;
+	height: 90px;
+	margin: 10px;
+	margin-left: 20%;
+}
+
+.cardimgb {
+	width: 60px;
+	height: 90px;
+	margin: 10px;
+	margin-left: 5%;
+}
+
+.cardimgc {
+	width: 60px;
+	height: 90px;
+	margin: 10px;
+}
+
+.information {
+	margin-top: 10px;
+	background-color: black;
+}
+
+.information1 {
+	text-align: center;
+	font-size: 20px;
+}
+
+.information2 {
+	width: 15%;
+	text-align: left;
+	font-size: 20px;
+}
+
+.information3 {
+	width: 320px;
+	text-align: center;
+	font-size: 20px;
+}
+
+.information4 {
+	width: 420px;
+	text-align: left;
+	font-size: 20px;
+}
+
+.user {
+	width: 300px;
+    margin-left: auto;
+    margin-right: auto;
+	margin-top: 10px;
+	background-color: #000;
+	border-radius: 10px;
+	border: 2px solid #000;
+}
+
+.user td {
+	text-align: center;
+}
+
+.usertable {
+	font-size: 15px;
+}
+
+.usertable td {
+	padding-top: 10px;
+}
+
+.usertabletda {
+	text-align: right;
+}
+
+.usertabletdb {
+	width: 150px;
+	text-align: left;
+}
+
+.useraction {
+	float:left;
+    margin-top: 50px;
+    margin-left: 20px;
+    text-align: center;
+	width: 300px;
+	font-size: 12px;
+}
+
+.userhandandblind{
+	width: 360px;
+	float: left;
+	text-align: center;
+}
+
+.userinfo {
+	float:left;
+	width:300px;
+    margin-top: 20px;
+	background-color: #000;
+	border-radius: 10px;
+	border: 2px solid #000;
+}
+
+.betposition {
+	width: 30px;
+	color: #0000FF;
+	background-color: #FF9900;
+	border-radius: 10px;
+}
+
+.round {
+	margin-top:20px;
+	margin-left:10px;
+	float:left;
+	width: 200px;
+	height:200px;
+	text-align: center;
+	font-size: 30px;
+}
+
+.roundtd {
+	width: 20px;
+}
+
+.betround {
+	width: 180px;
+	font-size: 25px;
+}
+
+.opponentInfo{
+	width: 600px;
+	height:200px;
+	float: left;
+	text-align: center;
+}
+
+.opponent {
+	width: 450px;
+	text-align:center;
+	margin-left: auto;
+	margin-right:auto;
+	margin-top: 10px;
+	background-color: #000;
+	border-radius: 10px;
+	border: 2px solid #000;
+}
+
+.opponent td {
+	text-align: center;
+}
+
+.potinfo {
+	text-align: center;
+	float:right;
+	margin-top: 15px;
+	margin-right:20px;
+	width: 150px;
+	height:150px;
+	font-size: 25px;
+	background-color: darkgreen;
+	border-radius: 250px;
+	border: 2px solid #000;
+}
+
+.informations{
+	clear: both;
+	width: 100%;
+}
+
+.nextdialog {
+	text-align: center;
+}
+
+.board {
+	margin: 0% 5% 0% 5%;
+	height: 18%;
+	border: 2px solid #000;
+}
+
+.slider {
+	width: 100px;
+}
+
+.inputText {
+	width: 25px;
+	text-align: right;
+}
+
+.useractionmargin {
+	margin-top: 15px;
+}
+
+ul li {
+	list-style: none;
+}
+
+label {
+	margin-right: 10px;
+	width: 100px;
+	float: left;
+}
+
+ul {
+	width: 400px;
+	margin: 0 20%;
+}
