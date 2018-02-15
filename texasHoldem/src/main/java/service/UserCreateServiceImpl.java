@@ -40,7 +40,7 @@ public class UserCreateServiceImpl implements UserCreateService {
 	 */
 	private String userCreateAndLogin() {
 
-		Usertable user = new Usertable(ub.getUserId(), ub.getUserName(), ub.getPassword());
+		Usertable user = new Usertable(ub.getUserId(), ub.getUserName(), ub.getPassword(),null,0,1);
 
 		try {
 

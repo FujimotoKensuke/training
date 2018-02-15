@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:p="http://primefaces.org/ui">
+    <h:head>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+        <h:outputStylesheet library="css" name="texasHoldemStyle.css" />
+        <title>テキサスホールデムシステム - オプション</title>
+    </h:head>
+    <h:body>
+        <div class="main">
+            <p class="lw">オプション</p>
+            <div class="contents">
+                <h:form>
+                    <p:panelGrid columns="2" styleClass="inputposition">
+                        <p:outputLabel value="コメント"/>
+                        <p:inputText value="#{userBean.comments}"
+                                     placeholder="コメント入力覧" styleClass="inputsearchwidth" maxlength="20" />
+                    </p:panelGrid>
+                    <p:messages id="messages" autoUpdate="true"
+                                styleClass="messagestyle" closable="true" />
+                    <p>
+                        <p:commandButton styleClass="buttonmargin" value="戻る" action="#{optionActionBean.goBack()}"/>
+                        <p:commandButton styleClass="buttonmargin" value="登録" actionListener="#{optionActionBean.commentsUpdate()}"/>
+                    </p>
+                </h:form>
+            </div>
+        </div>
+    </h:body>
+</html>

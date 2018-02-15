@@ -24,6 +24,16 @@ public class UserTableDb {
 	public void create(Usertable user) {
 		em.persist(user);
 	}
+        
+        /**
+         *  DBのユーザーテーブルにコメントを追加します。
+         * @param userId
+         * @param comments 
+         */
+        public void updateComeents(String userId, String comments){
+            em.createQuery("UPDATE Usertable u SET u.comments = '" + comments + "' WHERE u.userId = '" + userId  + "'").executeUpdate();
+            
+        }
 
 	/**
 	 * DBのユーザーテーブルからユーザーIDとパスワードで、登録済みユーザーを検索してユーザー名を取得します。
