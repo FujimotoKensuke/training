@@ -25,16 +25,32 @@ public class UserTableDb {
 		em.persist(user);
 	}
         
-        /**
-         *  DBのユーザーテーブルにコメントを追加します。
-         * @param userId
-         * @param comments 
+         /**
+         *  DBのユーザーテーブルのユーザー名を更新します。
+         * @param ub
          */
-        public void updateComeents(String userId, String comments){
-            em.createQuery("UPDATE Usertable u SET u.comments = '" + comments + "' WHERE u.userId = '" + userId  + "'").executeUpdate();
+        public void updateUserName(UserBean ub){
+            em.createQuery("UPDATE Usertable u SET u.userName = :userName"
+                    + " WHERE u.userId = :userId",Usertable.class)
+                    .setParameter("userName", ub.getUserName())
+                    .setParameter("userId", ub.getUserId())
+                    .executeUpdate();
             
         }
-
+        
+        /**
+         *  DBのユーザーテーブルのコメントを更新します。
+         * @param ub
+         */
+        public void updateComments(UserBean ub){
+            em.createQuery("UPDATE Usertable u SET u.comments = :comments"
+                    + " WHERE u.userId = :userId",Usertable.class)
+                    .setParameter("comments", ub.getComments())
+                    .setParameter("userId", ub.getUserId())
+                    .executeUpdate();
+            
+        }
+        
 	/**
 	 * DBのユーザーテーブルからユーザーIDとパスワードで、登録済みユーザーを検索してユーザー名を取得します。
 	 * @param ub

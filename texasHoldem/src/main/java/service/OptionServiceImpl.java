@@ -17,15 +17,16 @@ public class OptionServiceImpl implements OptionService{
     
     @Override
     public void execute() {
-        commentsAdd();
+        updateUserNameAndComments();
     }
     
     /**
-     * コメントを追加します。
+     * ユーザー名とコメントを更新します。
      */
-    private void commentsAdd(){
+    private void updateUserNameAndComments(){
         
-        db.updateComeents(ub.getUserId(), ub.getComments());
+        db.updateUserName(ub);
+        db.updateComments(ub);
     }
     
 }

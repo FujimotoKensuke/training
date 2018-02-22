@@ -29,7 +29,7 @@ public class Usertable implements Serializable {
     @Column(length = 10, nullable = false)
     private String userName;
 
-    @Column(length = 10, nullable = false)
+    @Column(length = 10, nullable = true)
     private String comments;
 
     @Column(nullable = false)

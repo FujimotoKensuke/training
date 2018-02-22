@@ -16,15 +16,18 @@
             <div class="contents">
                 <h:form>
                     <p:panelGrid columns="2" styleClass="inputposition">
+                        <p:outputLabel value="ユーザー名"/>
+                        <p:inputText value="#{userBean.userName}"
+                                     placeholder="コメント入力覧" styleClass="inputsearchwidth" maxlength="10" />
                         <p:outputLabel value="コメント"/>
                         <p:inputText value="#{userBean.comments}"
-                                     placeholder="コメント入力覧" styleClass="inputsearchwidth" maxlength="20" />
+                                     placeholder="コメント入力覧" styleClass="inputsearchwidth" maxlength="10" />
                     </p:panelGrid>
                     <p:messages id="messages" autoUpdate="true"
                                 styleClass="messagestyle" closable="true" />
                     <p>
                         <p:commandButton styleClass="buttonmargin" value="戻る" action="#{optionActionBean.goBack()}"/>
-                        <p:commandButton styleClass="buttonmargin" value="登録" actionListener="#{optionActionBean.commentsUpdate()}"/>
+                        <p:commandButton styleClass="buttonmargin" value="設定変更" actionListener="#{optionActionBean.commentsUpdate()}"/>
                     </p>
                 </h:form>
             </div>
