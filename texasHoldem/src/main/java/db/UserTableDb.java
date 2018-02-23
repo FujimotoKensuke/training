@@ -6,6 +6,7 @@ import javax.persistence.PersistenceContext;
 
 import beans.UserBean;
 import entity.Usertable;
+import java.util.List;
 
 /**
  * ユーザーテーブルのDB接続クラスです。
@@ -67,5 +68,13 @@ public class UserTableDb {
 		ub.setUserName(user.getUserName());
 
 	}
+        
+        /**
+         * DBのユーザーテーブルから全データのリストを取得します。
+         * @return 
+         */
+        public List<Object[]> getUserIdAndUserNameAndComments(){
+            return em.createQuery("SELECT u.userId,u.userName,u.comments FROM Usertable u").getResultList();
+        }
 
 }

@@ -350,4 +350,36 @@ public class TexasHoldemEnum {
         }
     }
 
+    /**
+     * ランキング種別の列挙型クラスです。
+     */
+    public enum rankingType {
+
+        TOTALCHANGEPOINT("総変動Pt"),
+        NUMBEROFMATCH("試合数"),
+        WINNING("勝率");
+
+        private final String rankingType;
+
+        /**
+         * コンストラクタ
+         *
+         * @param String rankingType
+         */
+        private rankingType(final String rankingType) {
+            this.rankingType = rankingType;
+        }
+
+        /**
+         * 設定された文字列を返します。
+         *
+         * @return String "battleResult"
+         
+         */
+        @Override
+        public String toString() {
+            return this.rankingType;
+        }
+
+    }
 }

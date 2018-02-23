@@ -80,6 +80,10 @@
     margin-left: 5px;
 }
 
+.sortbuttonmargin {
+    margin: 10px 10px 10px 10px;
+}
+
 .messagestyle {
     margin-left: auto;
     margin-right: auto;

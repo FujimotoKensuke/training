@@ -55,8 +55,8 @@ public class BattleRecordServiceImpl implements BattleRecordService {
 		String unit=params.get("unit");
 
 		ub.setDetailBattleRecord(detailBattleRecordDb.select(ub.getUserId(), unit));
-		ub.setOpponentName(battleRecordDb.selectBattlrResult(ub.getUserId(), unit).getOpponentName());
-		ub.setBattleResult(battleRecordDb.selectBattlrResult(ub.getUserId(), unit).getBattleResult());
+		ub.setOpponentName(battleRecordDb.selectBattleResult(ub.getUserId(), unit).getOpponentName());
+		ub.setBattleResult(battleRecordDb.selectBattleResult(ub.getUserId(), unit).getBattleResult());
 
 	}
 

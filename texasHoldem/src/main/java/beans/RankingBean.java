@@ -1,44 +1,50 @@
 package beans;
 
-import javax.enterprise.context.RequestScoped;
+import java.io.Serializable;
+import java.util.List;
+import javax.faces.view.ViewScoped;
 import javax.inject.Named;
 
+/**
+ * ランキングのビーンクラスです。
+ */
 @Named
-@RequestScoped
-public class RankingBean {
+@ViewScoped
+public class RankingBean implements Serializable {
+
+    /**
+     *ランキング画面のトップに表示するユーザーの名前です。
+     */
+    private String showUserName;
     
+    /**
+     * 検索するユーザーIDです。
+     */
     private String searchUserId;
     
-    private int totalChangePointRanking;
+    /**
+     * ランキング画面のトップに表示する順位です。
+     */
+    private Integer showRanking;
     
-    private int NumberOfMatchRanking;
+    /**
+     * ランキング画面に表示するランキングの種類です。
+     */
+    private String showRankingType;
     
-    private int winningRanking;
-
-    public int getTotalChangePointRanking() {
-        return totalChangePointRanking;
+    /**
+     * ランキングで表示するクラスのリストです。
+     */
+    private List<UserRankBean> rankingList;
+    
+    public String getShowUserName() {
+        return showUserName;
     }
 
-    public void setTotalChangePointRanking(int totalChangePointRanking) {
-        this.totalChangePointRanking = totalChangePointRanking;
+    public void setShowUserName(String showUserName) {
+        this.showUserName = showUserName;
     }
-
-    public int getNumberOfMatchRanking() {
-        return NumberOfMatchRanking;
-    }
-
-    public void setNumberOfMatchRanking(int NumberOfMatchRanking) {
-        this.NumberOfMatchRanking = NumberOfMatchRanking;
-    }
-
-    public int getWinningRanking() {
-        return winningRanking;
-    }
-
-    public void setWinningRanking(int winningRanking) {
-        this.winningRanking = winningRanking;
-    }
-
+    
     public String getSearchUserId() {
         return searchUserId;
     }
@@ -47,5 +53,27 @@ public class RankingBean {
         this.searchUserId = searchUserId;
     }
     
+    public Integer getShowRanking() {
+        return showRanking;
+    }
+
+    public void setShowRanking(Integer showRanking) {
+        this.showRanking = showRanking;
+    }
     
+    public List<UserRankBean> getRankingList() {
+        return rankingList;
+    }
+
+    public void setRankingList(List<UserRankBean> rankingList) {
+        this.rankingList = rankingList;
+    }
+
+    public String getShowRankingType() {
+        return showRankingType;
+    }
+
+    public void setShowRankingType(String showRankingType) {
+        this.showRankingType = showRankingType;
+    }
 }
