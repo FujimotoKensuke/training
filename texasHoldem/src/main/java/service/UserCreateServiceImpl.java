@@ -6,6 +6,7 @@ import javax.inject.Inject;
 
 import beans.UserBean;
 import common.TexasHoldemConstants;
+import common.TexasHoldemEnum;
 import db.UserTableDb;
 import entity.Usertable;
 import util.MessageUtil;
@@ -40,7 +41,8 @@ public class UserCreateServiceImpl implements UserCreateService {
 	 */
 	private String userCreateAndLogin() {
 
-		Usertable user = new Usertable(ub.getUserId(), ub.getUserName(), ub.getPassword());
+		Usertable user = new Usertable(ub.getUserId(), ub.getUserName(), ub.getPassword()
+                        ,null,TexasHoldemEnum.deleteFlg.OFF.getNumber(),TexasHoldemEnum.displyFlg.ON.getNumber());
 
 		try {
 
