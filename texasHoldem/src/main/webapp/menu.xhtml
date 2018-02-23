@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:p="http://primefaces.org/ui">
+    <h:head>
+        <h:outputStylesheet library="css" name="texasHoldemStyle.css" />
+    </h:head>
+    <h:body>
+        <div class="main">
+            <p class="lw">メインメニュー</p>
+            <div class="contents">
+                <div id="menu">
+                    こんにちは、
+                    <h:outputText value="#{userBean.userName}" />
+                    さん
+                    <h:form>
+                        <p>
+                            <p:commandButton value="ゲーム開始"
+                                             actionListener="#{menuActionBean.showDialog()}" />
+                            <p:commandButton value="ゲーム開始(CPU)"
+                                             action="#{menuActionBean.goGameMain()}"
+                                             styleClass="buttonmarginleft" />
+                            <p:commandButton value="戦績表示"
+                                             action="#{menuActionBean.goGameRecord()}"
+                                             styleClass="buttonmarginleft" />
+                        </p>
+                        <p>
+                            <p:commandButton value="オプション" action="#{menuActionBean.goOption()}" />
+                            <p:commandButton value="ランキング" action="#{menuActionBean.goRanking()}" />
+                        </p>
+                        <p:commandButton value="ログアウト" action="#{menuActionBean.logout()}" />
+                    </h:form>
+                </div>
+            </div>
+        </div>
+    </h:body>
+</html>

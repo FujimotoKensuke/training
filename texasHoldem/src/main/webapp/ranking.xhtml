@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:p="http://primefaces.org/ui">
+    <h:head>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+        <h:outputStylesheet library="css" name="texasHoldemStyle.css" />
+        <title>テキサスホールデムシステム - ランキング</title>
+    </h:head>
+    <h:body>
+        <div class="main">
+            <p class="lw">ランキング表</p>
+            <div class="contents">
+                <h:outputText value="あなたの現在の順位は"/>
+                <h:outputText value="#{rankingBean.totalChangePointRanking}"/>
+                <h:outputText value="位です"/>
+                <h:form>
+                    <p:commandButton styleClass="buttonmargin" value="総変動Pt" />
+                    <p:commandButton styleClass="buttonmargin" value="試合数" />
+                    <p:commandButton styleClass="buttonmargin" value="勝率" />
+                </h:form>
+                <h:form>
+                    <p:inputText value="#{rankingBean.searchUserId}" placeholder="検索ユーザーID入力" styleClass="inputsearchwidth" maxlength="10" />
+                    <p:commandButton styleClass="buttonmargin" value="検索" />
+                </h:form>
+                <h:form>
+                    <p:commandButton styleClass="buttonmargin" value="↑" />
+                    <p:commandButton styleClass="buttonmargin" value="↓" />
+                </h:form>
+                <h:dataTable style="margin-left: 200px" border="1">
+                    <h:column>
+                        <f:facet name="header">順位</f:facet>
+                        <h:outputText value="" />
+                    </h:column>
+                    <h:column>
+                        <f:facet name="header">ユーザー名</f:facet>
+                        <h:outputText value="" />
+                    </h:column>
+                    <h:column>
+                        <f:facet name="header">総変動Pt</f:facet>
+                        <h:outputText value="" />
+                    </h:column>
+                    <h:column>
+                        <f:facet name="header">試合数</f:facet>
+                        <h:outputText value="" />
+                    </h:column>
+                    <h:column>
+                        <f:facet name="header">勝率</f:facet>
+                        <h:outputText value="" />
+                    </h:column>
+                    <h:column>
+                        <f:facet name="header">最多成立役</f:facet>
+                        <h:outputText value="" />
+                    </h:column>
+                    <h:column>
+                        <f:facet name="header">コメント</f:facet>
+                        <h:outputText value="" />
+                    </h:column>
+                </h:dataTable>
+                <h:form>
+                    <p:commandButton styleClass="buttonmargin" value="←" />
+                    <p:commandButton styleClass="buttonmargin" value="→" />
+                </h:form>
+                <h:form>
+                <p:commandButton styleClass="buttonmargin" value="戻る" action="#{rankingActionBean.goBack()}"/>
+                </h:form>
+            </div>
+        </div>
+    </h:body>
+</html>
