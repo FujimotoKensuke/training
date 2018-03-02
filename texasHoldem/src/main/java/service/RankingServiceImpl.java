@@ -12,7 +12,6 @@ import db.BattleRecordDb;
 import db.DetailBattleRecordDb;
 import db.UserTableDb;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import static java.util.Comparator.comparing;
 import java.util.List;
@@ -131,14 +130,14 @@ public class RankingServiceImpl implements RankingService {
      */
     private void ascendingSortExecute() {
 
-        switch (rb.getShowRankingType()) {
-            case "総変動Pt":
+        switch (rankingType.toRankingType(rb.getShowRankingType())) {
+            case TOTALCHANGEPOINT:
                 rb.setRankingList(rb.getRankingList().stream().sorted(comparing(UserRankBean::getTotalChangePoint).reversed()).collect(Collectors.toList()));
                 break;
-            case "試合数":
+            case NUMBEROFMATCH:
                 rb.setRankingList(rb.getRankingList().stream().sorted(comparing(UserRankBean::getNumberOfMatch).reversed()).collect(Collectors.toList()));
                 break;
-            case "勝率":
+            case WINNING:
                 rb.setRankingList(rb.getRankingList().stream().sorted(comparing(UserRankBean::getWinning).reversed()).collect(Collectors.toList()));
                 break;
 
@@ -150,14 +149,14 @@ public class RankingServiceImpl implements RankingService {
      */
     private void descendingSortExecute() {
 
-        switch (rb.getShowRankingType()) {
-            case "総変動Pt":
+        switch (rankingType.toRankingType(rb.getShowRankingType())) {
+            case TOTALCHANGEPOINT:
                 rb.setRankingList(rb.getRankingList().stream().sorted(comparing(UserRankBean::getTotalChangePoint)).collect(Collectors.toList()));
                 break;
-            case "試合数":
+            case NUMBEROFMATCH:
                 rb.setRankingList(rb.getRankingList().stream().sorted(comparing(UserRankBean::getNumberOfMatch)).collect(Collectors.toList()));
                 break;
-            case "勝率":
+            case WINNING:
                 rb.setRankingList(rb.getRankingList().stream().sorted(comparing(UserRankBean::getWinning)).collect(Collectors.toList()));
                 break;
 
@@ -166,9 +165,10 @@ public class RankingServiceImpl implements RankingService {
 
     /**
      * ランキングの順位を返します。
-     * @return 
+     *
+     * @return
      */
-    private int rankReturn(){
+    private int rankReturn() {
         int rankNumber = 0;
         if (rb.getSearchUserId() == null) {
             for (int i = 0; i < rb.getRankingList().size(); i++) {
@@ -186,43 +186,44 @@ public class RankingServiceImpl implements RankingService {
         }
         return rankNumber;
     }
+
     /**
      * ランキングで表示するクラスのリストを作成します。
      */
     private void listCreate() {
+
+        List<UserRankBean> userRankBeanList = new ArrayList<>();
         List<Object[]> userIdAndUserNameAndCommentsList = userTableDb.getUserIdAndUserNameAndComments();
-        UserRankBean userRankBean;
+
         for (int i = 0; i < userIdAndUserNameAndCommentsList.size(); i++) {
+
             List<String> battleResultList = battleRecordDb.selectBattleResult(userIdAndUserNameAndCommentsList.get(i)[0].toString());
             List<Object[]> userHandAndChangePointList = detailBattleRecordDb.selectUserHandAndChangePoint(userIdAndUserNameAndCommentsList.get(i)[0].toString());
             ArrayList<String> userHandList = new ArrayList<>();
             ArrayList<String> changePointList = new ArrayList<>();
+
             for (Object[] o : userHandAndChangePointList) {
                 userHandList.add(o[0].toString());
                 changePointList.add(o[1].toString());
             }
-             //コメントがNULLだった場合の分岐
+            UserRankBean userRankBean = new UserRankBean(
+                    userIdAndUserNameAndCommentsList.get(i)[0].toString(),
+                    userIdAndUserNameAndCommentsList.get(i)[1].toString(),
+                    changePointCalculate(changePointList),
+                    battleResultList.size(),
+                    winningCalculate(battleResultList),
+                    handCount(userHandList),
+                    null
+            );
+
+            //コメントがNULLではない場合
             if (userIdAndUserNameAndCommentsList.get(i)[2] != null) {
-                userRankBean = new UserRankBean(userIdAndUserNameAndCommentsList.get(i)[0].toString()
-                        ,userIdAndUserNameAndCommentsList.get(i)[1].toString()
-                        ,changePointCalculate(changePointList), battleResultList.size()
-                        , winningCalculate(battleResultList),handCount(userHandList), userIdAndUserNameAndCommentsList.get(i)[2].toString());
-            } else {
-                userRankBean = new UserRankBean(userIdAndUserNameAndCommentsList.get(i)[0].toString()
-                        ,userIdAndUserNameAndCommentsList.get(i)[1].toString()
-                        ,changePointCalculate(changePointList), battleResultList.size(), winningCalculate(battleResultList), handCount(userHandList), null);
+                userRankBean.setComments(userIdAndUserNameAndCommentsList.get(i)[2].toString());
             }
 
-             //ランキングのリストがNULLだった場合の分岐処理
-            if (rb.getRankingList() == null) {
-                rb.setRankingList(new ArrayList<>(Arrays.asList(userRankBean)));
-            } else {
-                List<UserRankBean> list = new ArrayList<>(rb.getRankingList());
-                list.add(userRankBean);
-                rb.setRankingList(list);
-            }
+            userRankBeanList.add(userRankBean);
         }
-
+        rb.setRankingList(userRankBeanList);
     }
 
     /**
@@ -231,6 +232,11 @@ public class RankingServiceImpl implements RankingService {
     private int winningCalculate(List<String> list) {
 
         double winCount = 0;
+
+        // もしリストが空だった場合
+        if (list.isEmpty()) {
+            return 0;
+        }
 
         for (String s : list) {
             if (battleResult.WIN.toString().equals(s)) {
@@ -249,6 +255,7 @@ public class RankingServiceImpl implements RankingService {
 
     /**
      * 成立役をカウントして1番多い役を返します。
+     *
      * @param list
      * @return
      */
@@ -263,17 +270,17 @@ public class RankingServiceImpl implements RankingService {
         });
 
         List<Entry<String, Integer>> list_entries = new ArrayList<>(handCount.entrySet());
-        
+
         // 比較関数Comparatorを使用してMap.Entryの値を比較する（降順）
         Collections.sort(list_entries, (Entry<String, Integer> obj1, Entry<String, Integer> obj2) -> obj2.getValue().compareTo(obj1.getValue()));
-        if(list_entries.get(0).getValue() == 0){
+        if (list_entries.get(0).getValue() == 0) {
             return "";
-        }else{
+        } else {
             return list_entries.get(0).getKey();
         }
-        
+
     }
-        
+
     /**
      * 成立役をカウントするためのHashMapを作成します。
      *
@@ -295,19 +302,20 @@ public class RankingServiceImpl implements RankingService {
 
         return handCount;
     }
-    
+
     /**
      * 総変動ポイントを算出します。
+     *
      * @param list
-     * @return 
+     * @return
      */
     private int changePointCalculate(List<String> list) {
         int total = 0;
+        Pattern p = Pattern.compile("(^[-\\+]\\d+)(?=\\D+)");
         total = list.stream().map((s) -> {
-            Pattern p = Pattern.compile("(?!\\D)(\\d+)(?=\\D+)");
             Matcher m = p.matcher(s);
             return m;
-        }).filter((m) -> (m.find())).map((m) -> Integer.parseInt(m.group(1))).reduce(total, Integer::sum);
+        }).filter((m) -> (m.find())).map((m) -> Integer.parseInt(m.group(0))).reduce(total, Integer::sum);
 
         return total;
     }

@@ -11,6 +11,9 @@
         <title>テキサスホールデムシステム - オプション</title>
     </h:head>
     <h:body>
+        <f:metadata>
+            <f:viewAction action="#{optionActionBean.init()}" onPostback="true" />
+        </f:metadata>
         <div class="main">
             <p class="lw">オプション</p>
             <div class="contents">
@@ -26,7 +29,7 @@
                     <p:messages id="messages" autoUpdate="true"
                                 styleClass="messagestyle" closable="true" />
                     <p>
-                        <p:commandButton styleClass="buttonmargin" value="戻る" action="#{optionActionBean.goBack()}"/>
+                        <p:commandButton styleClass="buttonmargin" value="戻る" action="#{optionActionBean.goBack()}" immediate="true"/>
                         <p:commandButton styleClass="buttonmargin" value="設定変更" actionListener="#{optionActionBean.commentsUpdate()}"/>
                     </p>
                 </h:form>

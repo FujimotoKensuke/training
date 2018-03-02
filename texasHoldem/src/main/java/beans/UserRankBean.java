@@ -9,7 +9,7 @@ public class UserRankBean {
      * ユーザーのIDです。
      */
     private String userId;
-    
+
     /**
      * ユーザーの名前です。
      */
@@ -43,20 +43,22 @@ public class UserRankBean {
     /**
      * コンストラクタ
      */
-    public UserRankBean(){}
-    
+    public UserRankBean() {
+    }
+
     /**
      * コンストラクタ
+     *
      * @param userId
      * @param userName
      * @param totalChangePoint
      * @param numberOfMatch
      * @param winning
      * @param mostHand
-     * @param comments 
+     * @param comments
      */
-    public UserRankBean(String userId,String userName, int totalChangePoint, int numberOfMatch,
-             int winning, String mostHand, String comments) {
+    public UserRankBean(String userId, String userName, int totalChangePoint, int numberOfMatch,
+            int winning, String mostHand, String comments) {
 
         this.userId = userId;
         this.userName = userName;
@@ -71,29 +73,57 @@ public class UserRankBean {
     public String getUserId() {
         return userId;
     }
-    
+
+    public void setUserId(String userId) {
+        this.userId = userId;
+    }
+
     public String getUserName() {
         return userName;
+    }
+
+    public void setUserName(String userName) {
+        this.userName = userName;
     }
 
     public int getTotalChangePoint() {
         return totalChangePoint;
     }
 
+    public void setTotalChangePoint(int totalChangePoint) {
+        this.totalChangePoint = totalChangePoint;
+    }
+
     public int getNumberOfMatch() {
         return numberOfMatch;
+    }
+
+    public void setNumberOfMatch(int numberOfMatch) {
+        this.numberOfMatch = numberOfMatch;
     }
 
     public int getWinning() {
         return winning;
     }
 
+    public void setWinning(int winning) {
+        this.winning = winning;
+    }
+
     public String getMostHand() {
         return mostHand;
     }
 
+    public void setMostHand(String mostHand) {
+        this.mostHand = mostHand;
+    }
+
     public String getComments() {
         return comments;
+    }
+
+    public void setComments(String comments) {
+        this.comments = comments;
     }
 
 }
