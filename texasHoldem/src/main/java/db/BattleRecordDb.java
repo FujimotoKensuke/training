@@ -7,6 +7,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 
 import entity.BattleRecord;
+import java.util.ArrayList;
 
 /**
  * バトルレコードテーブルのDB接続クラスです。
@@ -31,10 +32,23 @@ public class BattleRecordDb {
      * @param userId
      * @return
      */
-    @SuppressWarnings("unchecked")
     public List<BattleRecord> selectAll(String userId) {
         
-        return em.createQuery("SELECT u FROM BattleRecord u WHERE u.userId = '" + userId + "'").getResultList();
+        return em.createQuery("SELECT u FROM BattleRecord u WHERE u.userId = :userId",BattleRecord.class)
+                .setParameter("userId", userId)
+                .getResultList();
+    }
+    
+    /**
+     * DBのバトルレコードテーブルからユーザーIDをキーにして勝敗結果データのリストを取得します。
+     * @param userId
+     * @return
+     */
+    public List<String> selectBattleResult(String userId) {
+        
+        return em.createQuery("SELECT u.battleResult FROM BattleRecord u WHERE u.userId = :userId",String.class)
+                .setParameter("userId", userId)
+                .getResultList();
     }
     
     /**
@@ -43,9 +57,13 @@ public class BattleRecordDb {
      * @param battleDate
      * @return
      */
-    public BattleRecord selectBattlrResult(String userId,String battleDate) {
+    public BattleRecord selectBattleResult(String userId,String battleDate) {
         
         return (BattleRecord) em.createQuery("SELECT u FROM BattleRecord u "
-                + "WHERE u.userId = '" + userId + "' AND u.battleDate ='" + battleDate + "'").getSingleResult();
+                + "WHERE u.userId = :userId"
+                + " AND u.battleDate = :battleDate",BattleRecord.class)
+                .setParameter("userId", userId)
+                .setParameter("battleDate", battleDate)
+                .getSingleResult();
     }
 }

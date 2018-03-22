@@ -30,8 +30,7 @@ public class TexasHoldemEnum {
         /**
          * 設定された文字列を返します。
          *
-         * @return String "betRound"
-         
+         * @return String "betRound"  
          */
         @Override
         public String toString() {
@@ -62,8 +61,7 @@ public class TexasHoldemEnum {
         /**
          * 設定された文字列を返します。
          *
-         * @return String "blind"
-         
+         * @return String "blind"  
          */
         @Override
         public String toString() {
@@ -95,8 +93,7 @@ public class TexasHoldemEnum {
         /**
          * 設定された文字列を返します。
          *
-         * @return String "battleResult"
-         
+         * @return String "battleResult"  
          */
         @Override
         public String toString() {
@@ -137,8 +134,7 @@ public class TexasHoldemEnum {
         /**
          * 設定された文字列を返します。
          *
-         * @return String "hand"
-         
+         * @return String "hand"  
          */
         @Override
         public String toString() {
@@ -148,8 +144,7 @@ public class TexasHoldemEnum {
         /**
          * 設定された数字を返します。
          *
-         * @return int handRank
-         
+         * @return int handRank  
          */
         public int handRankReturn() {
             return this.handRank;
@@ -182,8 +177,7 @@ public class TexasHoldemEnum {
         /**
          * 設定された文字列を返します。
          *
-         * @return String "action"
-         
+         * @return String "action"  
          */
         @Override
         public String toString() {
@@ -219,8 +213,7 @@ public class TexasHoldemEnum {
         /**
          * 設定された文字列を返します。
          *
-         * @return String "suitName"
-         
+         * @return String "suitName"  
          */
         @Override
         public String toString() {
@@ -230,8 +223,7 @@ public class TexasHoldemEnum {
         /**
          * 設定された文字列を返します。
          *
-         * @return String "suitMark"
-         
+         * @return String "suitMark"  
          */
         public String suitMarkString() {
             return this.suitMark;
@@ -274,8 +266,7 @@ public class TexasHoldemEnum {
         /**
          * 設定された文字列を返します。
          *
-         * @return String "cardImgNumber"
-         
+         * @return String "cardImgNumber"  
          */
         @Override
         public String toString() {
@@ -285,64 +276,67 @@ public class TexasHoldemEnum {
         /**
          * 設定された文字列を返します。
          *
-         * @return String "cardNumber"
-         
+         * @return String "cardNumber"  
          */
         public String cardNumberString() {
             return this.cardNumber;
         }
 
     }
-    
+
     /**
      * 削除フラグの列挙型クラスです。
      */
     public enum deleteFlg {
-        
+
         OFF(0),
         ON(1);
 
         private final int number;
-        
+
         /**
          * コンストラクタ
-         * @param number 
+         *
+         * @param number
          */
-        private deleteFlg(final int number){
-            
+        private deleteFlg(final int number) {
+
             this.number = number;
         }
-        
+
         /**
          * 設定された整数を返します。
+         *
          * @return int number
          */
         public int getNumber() {
             return number;
         }
     }
-    
+
     /**
      * 画面表示フラグの列挙型クラスです。
      */
     public enum displyFlg {
-        
+
         OFF(0),
         ON(1);
 
         private final int number;
-        
+
         /**
          * コンストラクタ
-         * @param number 
+         *
+         * @param number
          */
-        private displyFlg(final int number){
-            
+        private displyFlg(final int number) {
+
             this.number = number;
         }
-        
+
         /**
          * 設定された整数を返します。
+         *
          * @return int number
          */
         public int getNumber() {
@@ -350,4 +344,47 @@ public class TexasHoldemEnum {
         }
     }
 
+    /**
+     * ランキング種別の列挙型クラスです。
+     */
+    public enum rankingType {
+
+        TOTALCHANGEPOINT("総変動Pt"),
+        NUMBEROFMATCH("試合数"),
+        WINNING("勝率");
+
+        private final String rankingType;
+
+        /**
+         * コンストラクタ
+         *
+         * @param String rankingType
+         */
+        private rankingType(final String rankingType) {
+            this.rankingType = rankingType;
+        }
+
+        /**
+         * 設定された文字列を返します。
+         *
+         * @return String "battleResult"  
+         */
+        @Override
+        public String toString() {
+            return this.rankingType;
+        }
+
+        public static rankingType toRankingType(String rankingTypeName) {
+
+            rankingType result = null;
+
+            for (rankingType rankingType : values()) {
+                if (rankingType.toString().equals(rankingTypeName)) {
+                    result = rankingType;
+                    break;
+                }
+            }
+            return result;
+        }
+    }
 }
