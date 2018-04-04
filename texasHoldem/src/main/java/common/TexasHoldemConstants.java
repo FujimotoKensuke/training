@@ -89,4 +89,13 @@ public class TexasHoldemConstants {
      */
     public static final String UPDATE_MISS_MSG = "ユーザー情報を更新出来ませんでした。もう一度確認してください。";
 
+    /**
+     * タイマー発動のjavascriptです。
+     */
+    public static final String TIMER_SCRIPT = "PF('stepRound').start(); PF('stepBetRoundTimer').start();";
+
+    /**
+     * タイマー停止のjavascriptです。
+     */
+    public static final String TIMER_STOP_SCRIPT = "PF('stepRoundTimer').stop(true);　";
 }

@@ -12,26 +12,30 @@ import common.TexasHoldemEnum.action;
 @RequestScoped
 public class CheckBtnServiceImpl implements CheckBtnService {
 
-	@Inject
-	private GameBean gb;
+    @Inject
+    private GameBean gb;
 
-	@Override
-	public void execute() {
+    @Inject
+    private GameMainService gameMainService;
 
-		check();
+    @Override
+    public void execute() {
 
-	}
+        check();
+        gameMainService.allBtnNotUsable();
 
-	/**
-	 * チェックボタン押下時の動作を設定します。
-	 */
-	public void check() {
+    }
 
-		gb.setUserAction(action.CHECK.toString());
-		gb.setUserActionMsg(gb.getUserAction());
-		gb.setUserTurn(false);
-		gb.setUserSituation("");
+    /**
+     * チェックボタン押下時の動作を設定します。
+     */
+    public void check() {
 
-	}
+        gb.setUserAction(action.CHECK.toString());
+        gb.setUserActionMsg(gb.getUserAction());
+        gb.setUserTurn(false);
+        gb.setUserSituation("");
+
+    }
 
 }

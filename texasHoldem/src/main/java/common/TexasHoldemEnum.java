@@ -75,19 +75,23 @@ public class TexasHoldemEnum {
      */
     public enum battleResult {
 
-        WIN("勝ち"),
-        LOSE("負け"),
-        DRAW("引き分け");
+        WIN("勝ち", "PF('stepBetRoundTimer').stop(true); PF('roundWinDialog').show();", "PF('stepBetRoundTimer').stop(true); PF('gameWinDialog').show();"),
+        LOSE("負け", "PF('stepBetRoundTimer').stop(true); PF('roundLoseDialog').show();", "PF('stepBetRoundTimer').stop(true); PF('gameLoseDialog').show();"),
+        DRAW("引き分け", "PF('stepBetRoundTimer').stop(true); PF('roundDrawDialog').show();", "PF('stepBetRoundTimer').stop(true); PF('gameDrawDialog').show();");
 
         private final String battleResult;
+        private final String roundDialogScript;
+        private final String gameDialogScript;
 
         /**
          * コンストラクタ
          *
          * @param String battleResult
          */
-        private battleResult(final String battleResult) {
+        private battleResult(final String battleResult, final String roundDialogScript, final String gameDialogScript) {
             this.battleResult = battleResult;
+            this.roundDialogScript = roundDialogScript;
+            this.gameDialogScript = gameDialogScript;
         }
 
         /**
@@ -98,6 +102,24 @@ public class TexasHoldemEnum {
         @Override
         public String toString() {
             return this.battleResult;
+        }
+
+        /**
+         * ラウンド終了時のダイアログ表示のjavascriptを返します。
+         *
+         * @return String "battleResult"  
+         */
+        public String roundDialogScriptToString() {
+            return this.roundDialogScript;
+        }
+
+        /**
+         * ゲーム終了時のダイアログ表示のjavascriptを返します。
+         *
+         * @return String "battleResult"  
+         */
+        public String gameDialogScriptToString() {
+            return this.gameDialogScript;
         }
 
     }

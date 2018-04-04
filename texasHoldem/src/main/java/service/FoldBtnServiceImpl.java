@@ -14,37 +14,31 @@ import common.TexasHoldemEnum.battleResult;
 @RequestScoped
 public class FoldBtnServiceImpl implements FoldBtnService {
 
-	@Inject
-	private GameBean gb;
+    @Inject
+    private GameBean gb;
 
-	@Override
-	public void execute() {
+    @Inject
+    private GameMainService gameMainService;
 
-		fold();
+    @Override
+    public void execute() {
 
-	}
+        fold();
 
-	/**
-	 * フォールドボタン押下時の動作を設定します。
-	 */
-	public void fold() {
+    }
 
-		gb.setUserAction(action.FOLD.toString());
-		gb.setUserActionMsg(gb.getUserAction());
-		gb.setUserSituation("");
-		gb.setUserFoldFlag(true);
+    /**
+     * フォールドボタン押下時の動作を設定します。
+     */
+    public void fold() {
 
-		if(gb.getRound() < TexasHoldemConstants.ROUND_MAX_NUMBER) {
+        gb.setUserAction(action.FOLD.toString());
+        gb.setUserActionMsg(gb.getUserAction());
+        gb.setUserSituation("");
+        gb.setUserFoldFlag(true);
+        gb.setBattleResultOfRound(battleResult.LOSE.toString());
+        gameMainService.resultDialogShow(battleResult.LOSE.roundDialogScriptToString());
 
-			// 負け
-			gb.setBattleResultOfRound(battleResult.LOSE.toString());
-
-//			DialogUtil.modalDialogShow("loseDialog.xhtml");
-
-		}else {
-			// オールイン
-		}
-
-	}
+    }
 
 }

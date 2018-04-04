@@ -1,16 +1,16 @@
 package service;
 
+import beans.GameBean;
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 
 import org.apache.commons.lang3.ArrayUtils;
-
-import beans.GameBean;
 import common.TexasHoldemConstants;
 import common.TexasHoldemEnum.action;
 import common.TexasHoldemEnum.battleResult;
 import common.TexasHoldemEnum.betRound;
 import common.TexasHoldemEnum.blind;
+import util.JavascriptFromJavaUtil;
 
 /**
  * 各アクション処理を行うサービスクラスです。
@@ -18,662 +18,684 @@ import common.TexasHoldemEnum.blind;
 @RequestScoped
 public class GameMainServiceImpl implements GameMainService {
 
-	@Inject
-	private GameBean gb;
+    @Inject
+    private GameBean gb;
 
-	@Inject
-	GameMainHandJudgeService gameMainHandJudgeService;
+    @Inject
+    private GameMainHandJudgeService gameMainHandJudgeService;
 
-	@Inject
-	private GameMainRegisterService gameMainRegisterService;
+    @Inject
+    private GameMainRegisterService gameMainRegisterService;
 
-	@Override
-	public void execute() {
+    @Inject
+    private GameMainTimerService gameMainTimerService;
 
-		// 対戦相手がCPUかどうかの分岐処理
-		if(TexasHoldemConstants.CPU_NAME.equals(gb.getOpponentName())) {
+    @Override
+    public void execute() {
 
-			betRoundBranchingProcess();
+        // 対戦相手がCPUかどうかの分岐処理
+        if (TexasHoldemConstants.CPU_NAME.equals(gb.getOpponentName())) {
 
-		}else {
+            betRoundBranchingProcess();
 
-		}
+        } else {
 
+        }
 
-	}
+    }
 
-	@Override
-	public void betRoundStep() {
+    @Override
+    public void betRoundStep() {
 
-		betRoundStepDefault();
+        betRoundStepDefault();
 
-	}
+    }
 
-	/**
-	 * 各ベットラウンドの分岐処理です。
-	 */
-	private void betRoundBranchingProcess() {
+    @Override
+    public void allBtnNotUsable() {
+        allBtnFalse();
+    }
 
-		switch(gb.getBetRound()) {
+    @Override
+    public void resultDialogShow(String dialogScript) {
+        JavascriptFromJavaUtil.execute(dialogScript);
+    }
 
-		case "プリフロップ":
+    @Override
+    public void timerScriptExecute() {
+        JavascriptFromJavaUtil.execute(TexasHoldemConstants.TIMER_SCRIPT);
+    }
 
-			preFlop();
-			break;
+    /**
+     * 各ベットラウンドの分岐処理です。
+     */
+    private void betRoundBranchingProcess() {
 
-		case "フロップ":
-			flopAndTurnAndRiver();
-			gb.setUserHand(gameMainHandJudgeService.execute(ArrayUtils.addAll(gb.getUserCard(), gb.getBordInfo()[0],gb.getBordInfo()[1],gb.getBordInfo()[2])));
-			gb.setOpponentHandInfo(gameMainHandJudgeService.execute(ArrayUtils.addAll(gb.getOpponentCard(), gb.getBordInfo()[0],gb.getBordInfo()[1],gb.getBordInfo()[2])));
-			break;
-		case "ターン":
-			flopAndTurnAndRiver();
-			gb.setUserHand(gameMainHandJudgeService.execute(ArrayUtils.addAll(gb.getUserCard(), gb.getBordInfo()[0],gb.getBordInfo()[1],gb.getBordInfo()[2],gb.getBordInfo()[3])));
-			gb.setOpponentHandInfo(gameMainHandJudgeService.execute(ArrayUtils.addAll(gb.getOpponentCard(), gb.getBordInfo()[0],gb.getBordInfo()[1],gb.getBordInfo()[2],gb.getBordInfo()[3])));
-			break;
-		case "リバー":
+        switch (gb.getBetRound()) {
 
-			flopAndTurnAndRiver();
-			gb.setUserHand(gameMainHandJudgeService.execute(ArrayUtils.addAll(gb.getUserCard(), gb.getBordInfo())));
-			gb.setOpponentHandInfo(gameMainHandJudgeService.execute(ArrayUtils.addAll(gb.getOpponentCard(),gb.getBordInfo())));
-			break;
+            case "プリフロップ":
 
-		case "ショーダウン":
+                preFlop();
+                break;
 
-			showdown();
-			break;
-		}
-	}
+            case "フロップ":
+                flopAndTurnAndRiver();
+                gb.setUserHand(gameMainHandJudgeService.execute(ArrayUtils.addAll(gb.getUserCard(), gb.getBordInfo()[0], gb.getBordInfo()[1], gb.getBordInfo()[2])));
+                gb.setOpponentHandInfo(gameMainHandJudgeService.execute(ArrayUtils.addAll(gb.getOpponentCard(), gb.getBordInfo()[0], gb.getBordInfo()[1], gb.getBordInfo()[2])));
+                break;
+            case "ターン":
+                flopAndTurnAndRiver();
+                gb.setUserHand(gameMainHandJudgeService.execute(ArrayUtils.addAll(gb.getUserCard(), gb.getBordInfo()[0], gb.getBordInfo()[1], gb.getBordInfo()[2], gb.getBordInfo()[3])));
+                gb.setOpponentHandInfo(gameMainHandJudgeService.execute(ArrayUtils.addAll(gb.getOpponentCard(), gb.getBordInfo()[0], gb.getBordInfo()[1], gb.getBordInfo()[2], gb.getBordInfo()[3])));
+                break;
+            case "リバー":
 
-	/**
-	 * プリフロップ時の処理です。
-	 */
-	private void preFlop() {
+                flopAndTurnAndRiver();
+                gb.setUserHand(gameMainHandJudgeService.execute(ArrayUtils.addAll(gb.getUserCard(), gb.getBordInfo())));
+                gb.setOpponentHandInfo(gameMainHandJudgeService.execute(ArrayUtils.addAll(gb.getOpponentCard(), gb.getBordInfo())));
+                break;
 
-		/*
+            case "ショーダウン":
+
+                showdown();
+                break;
+        }
+    }
+
+    /**
+     * プリフロップ時の処理です。
+     */
+    private void preFlop() {
+
+        /*
 		 *  ユーザーのブラインドによって分岐
 		 *  分岐条件：ユーザーがSBでさらにアクションがベットの場合
-		 */
-		if(blind.SB.toString().equals(gb.getUserBlind()) && action.BET.toString().equals(gb.getUserAction())){
+         */
+        if (blind.SB.toString().equals(gb.getUserBlind()) && action.BET.toString().equals(gb.getUserAction())) {
 
-			caseOfSbBtnSet();
+            caseOfSbBtnSet();
 
-		}else {
+            // プリフロップ時にユーザーがオールインだった場合の分岐処理
+            if (gb.getOpponentActionMsg().equals(TexasHoldemConstants.ALL_IN + gb.getOpponentAction())) {
+                gb.setOpponentAllInFlag(true);
+            }
 
-			preFlopUserActoinBranchingProcess();
-		}
+        } else {
 
+            preFlopUserActoinBranchingProcess();
+        }
 
-	}
+    }
 
-	/**
-	 * フロップ、ターン、リバー時の処理です。
-	 */
-	private void flopAndTurnAndRiver() {
+    /**
+     * フロップ、ターン、リバー時の処理です。
+     */
+    private void flopAndTurnAndRiver() {
 
-		/*
+        /*
 		 *  ユーザーのブラインドによって分岐
 		 *  分岐条件：ユーザーがBBでさらにアクションを一度も選択していない場合
-		 */
-		if(blind.BB.toString().equals(gb.getUserBlind()) && gb.getUserAction().equals("")){
+         */
+        if (blind.BB.toString().equals(gb.getUserBlind()) && gb.getUserAction().equals("")) {
 
-			gb.setUserSituation(TexasHoldemConstants.YOUR_TURN);
-			gb.setUserTurn(true);
-			caseOfBbBtnSet();
+            gb.setUserSituation(TexasHoldemConstants.YOUR_TURN);
+            gb.setUserTurn(true);
+            caseOfBbBtnSet();
 
-		}else {
+        } else {
 
-			defaultUserActoinBranchingProcess();
-		}
+            defaultUserActoinBranchingProcess();
+        }
 
-	}
+    }
+
+    /**
+     * ショーダウン時の処理です。
+     */
+    private void showdown() {
+
+        gb.setUserSituation(gb.getUserHand());
+        gb.setOpponentHandInfo(gameMainHandJudgeService.execute(ArrayUtils.addAll(gb.getOpponentCard(), gb.getBordInfo())));
+        gb.setOpponentHand(gb.getOpponentHandInfo());
+
+        // 役を判定して勝敗を決定する処理です。
+//        if (gb.getRound() < TexasHoldemConstants.ROUND_MAX_NUMBER) {
+        if (gameMainHandJudgeService.handStrengthJudgeExecute(gb.getUserHand())
+                - gameMainHandJudgeService.handStrengthJudgeExecute(gb.getOpponentHand()) == 0) {
+
+            // 引き分け
+            gb.setBattleResultOfRound(battleResult.DRAW.toString());
+            JavascriptFromJavaUtil.execute(battleResult.DRAW.roundDialogScriptToString());
 
-	/**
-	 * ショーダウン時の処理です。
-	 */
-	private void showdown() {
+        } else if (gameMainHandJudgeService.handStrengthJudgeExecute(gb.getUserHand())
+                - gameMainHandJudgeService.handStrengthJudgeExecute(gb.getOpponentHand()) > 0) {
 
-		gb.setUserSituation(gb.getUserHand());
-		gb.setOpponentHandInfo(gameMainHandJudgeService.execute(ArrayUtils.addAll(gb.getOpponentCard(),gb.getBordInfo())));
-		gb.setOpponentHand(gb.getOpponentHandInfo());
+            // 勝ち
+            gb.setBattleResultOfRound(battleResult.WIN.toString());
+
+            // ユーザーと相手がお互いにオールイン時に勝利した場合の処理です。ゲームの勝敗が決定します。
+            if (gb.getUserAllInFlag() && gb.getOpponentAllInFlag()) {
+                gb.setBattleResult(battleResult.WIN.toString());
+                gb.setBattleResultOfRound("");
+                String changePoint = "+" + (gb.getPotPoint() / 2) + "(" + (gb.getUserPoint() + gb.getPotPoint()) + ")";
+                gb.setChangePoint(changePoint);
+                registerCreate();
+                JavascriptFromJavaUtil.execute(battleResult.WIN.gameDialogScriptToString());
+            } else {
+                JavascriptFromJavaUtil.execute(battleResult.WIN.roundDialogScriptToString());
+            }
 
-		// 役を判定して勝敗を決定する処理です。
-		if(gb.getRound() < TexasHoldemConstants.ROUND_MAX_NUMBER) {
+        } else {
 
-			//DialogUtil.modalDialogShow("winDialog.xhtml");
+            // 負け
+            gb.setBattleResultOfRound(battleResult.LOSE.toString());
 
-			if(gameMainHandJudgeService.handStrengthJudgeExecute(gb.getUserHand())
-					- gameMainHandJudgeService.handStrengthJudgeExecute(gb.getOpponentHand()) == 0) {
+            // ユーザーと相手がお互いにオールイン時に敗北した場合の処理です。ゲームの勝敗が決定します。
+            if (gb.getUserAllInFlag() && gb.getOpponentAllInFlag()) {
+                gb.setBattleResult(battleResult.LOSE.toString());
+                gb.setBattleResultOfRound("");
+                String changePoint = "-" + (gb.getPotPoint() / 2) + "(" + (gb.getUserPoint()) + ")";
+                gb.setChangePoint(changePoint);
+                registerCreate();
+                JavascriptFromJavaUtil.execute(battleResult.LOSE.gameDialogScriptToString());
+            } else {
+                JavascriptFromJavaUtil.execute(battleResult.LOSE.roundDialogScriptToString());
+            }
+        }
+    }
 
-				// 引き分け
-				gb.setBattleResultOfRound(battleResult.DRAW.toString());
+    /**
+     * プリフロップ時の各ボタンアクション選択時の分岐処理です。
+     */
+    private void preFlopUserActoinBranchingProcess() {
 
-			}else if(gameMainHandJudgeService.handStrengthJudgeExecute(gb.getUserHand())
-					- gameMainHandJudgeService.handStrengthJudgeExecute(gb.getOpponentHand()) > 0) {
+        allBtnFalse();
 
-				// 勝ち
-				gb.setBattleResultOfRound(battleResult.WIN.toString());
+        // プリフロップ時にユーザーがオールインだった場合の分岐処理
+        if (gb.getUserActionMsg().equals(TexasHoldemConstants.ALL_IN + gb.getUserAction())) {
+            gb.setUserAllInFlag(true);
+        }
 
-				// ユーザーと相手がお互いにオールイン時に勝利した場合の処理です。ゲームの勝敗が決定します。
-				if(gb.getUserAllInFlag() && gb.getOpponentAllInFlag()) {
-					gb.setBattleResult(battleResult.WIN.toString());
-					gb.setBattleResultOfRound("");
-					String changePoint = "+" + (gb.getPotPoint() / 2) + "(" + (gb.getUserPoint() + gb.getPotPoint()) + ")";
-					gb.setChangePoint(changePoint);
-					gameMainRegisterService.createDetailBattleRecordTableInfo();
-					gameMainRegisterService.createBattleRecordTableInfo();
-				}
+        switch (gb.getUserAction()) {
 
-			}else {
+            case "ベット":
 
-				// 負け
-				gb.setBattleResultOfRound(battleResult.LOSE.toString());
+                // ユーザーのオールインフラグが立っていた場合の分岐処理
+                if (gb.getUserAllInFlag()) {
 
-				// ユーザーと相手がお互いにオールイン時に敗北した場合の処理です。ゲームの勝敗が決定します。
-				if(gb.getUserAllInFlag() && gb.getOpponentAllInFlag()) {
-					gb.setBattleResult(battleResult.LOSE.toString());
-					gb.setBattleResultOfRound("");
-					String changePoint = "-" + (gb.getPotPoint() / 2) + "(" + (gb.getUserPoint()) + ")";
-					gb.setChangePoint(changePoint);
-					gameMainRegisterService.createDetailBattleRecordTableInfo();
-					gameMainRegisterService.createBattleRecordTableInfo();
-				}
-			}
-			// ラウンド数が10を超えた場合のゲーム終了の処理
-		}else {
+                    opponentCall();
+                    gameMainTimerService.execute();
 
-			if(gb.getUserPoint() - gb.getOpponentPoint() == 0) {
-				gb.setBattleResult(battleResult.DRAW.toString());
+                } else {
 
-			}else if(gb.getUserPoint() - gb.getOpponentPoint() > 0) {
-				gb.setBattleResult(battleResult.WIN.toString());
+                    // CPUのアクション及び情報設定
+                    opponentCall();
+                    caseOfCallBtnSet();
+                }
 
-			}else {
-				gb.setBattleResult(battleResult.LOSE.toString());
-			}
-			gameMainRegisterService.createDetailBattleRecordTableInfo();
-			gameMainRegisterService.createBattleRecordTableInfo();
+                break;
 
-		}
+            case "レイズ":
 
-	}
+                // ランダム生成
+                int ran = (int) (Math.random() * 10);
 
-	/**
-	 * プリフロップ時の各ボタンアクション選択時の分岐処理です。
-	 */
-	private void preFlopUserActoinBranchingProcess() {
+                // ユーザーのオールインフラグが立っていた場合の分岐処理
+                if (gb.getUserAllInFlag()) {
+                    // 確率分岐(10%でフォールド、90%でコール)
+                    if (ran == 0) {
+                        opponentFold();
 
-		allBtnFalse();
+                    } else {
+                        opponentCall();
+                    }
+                } else {
+                    // 確率分岐(10%でフォールド、90%でコール)
+                    if (ran == 0) {
+                        opponentFold();
 
-		switch(gb.getUserAction()) {
+                    } else {
 
-		case "ベット":
+                        opponentCall();
+                        gb.setUserSituation(TexasHoldemConstants.YOUR_TURN);
+                        caseOfCallBtnSet();
+                    }
+                }
 
-			// ユーザーのオールインフラグが立っていた場合の分岐処理
-			if(gb.getUserAllInFlag()) {
+                break;
 
-				opponentCall();
+            case "コール":
 
-			}else {
+                // ユーザーのオールインフラグが立っていた場合の分岐処理
+                if (gb.getUserAllInFlag()) {
 
-				// CPUのアクション及び情報設定
-				opponentCall();
-				caseOfCallBtnSet();
-			}
+                } else {
+                    // CPUのアクション及び情報設定
+                    opponentCheck();
+                }
 
-			break;
+                break;
 
-		case "レイズ":
+            case "チェック":
 
-			// ランダム生成
-			int ran = (int)(Math.random() * 10);
-			//int ran = 0;
+                // 局面を進行させる
+                //			betRoundStepDefault();
+                break;
 
-			// ユーザーのオールインフラグが立っていた場合の分岐処理
-			if(gb.getUserAllInFlag()) {
-				// 確率分岐(10%でフォールド、90%でコール)
-				if(ran == 0) {
-					opponentFold();
+        }
+    }
 
-				}else {
+    /**
+     * フロップ、ターン、リバー時の各ボタンアクション選択時のCPU対戦の分岐処理です。
+     */
+    private void defaultUserActoinBranchingProcess() {
 
-					opponentCall();
-				}
-			}else {
-				// 確率分岐(10%でフォールド、90%でコール)
-				if(ran == 0) {
-					opponentFold();
+        allBtnFalse();
 
-				}else {
+        switch (gb.getUserAction()) {
 
-					opponentCall();
-					gb.setUserSituation(TexasHoldemConstants.YOUR_TURN);
-					caseOfCallBtnSet();
-				}
-			}
+            case "":
 
-			break;
+                // ランダム生成
+                int ran = (int) (Math.random() * 10);
 
-		case "コール":
+                // 確率分岐(10%でベット、90%でチェック)
+                if (ran == 0) {
+                    // ベットの場合
+                    opponentBet(TexasHoldemConstants.CPU_BET_POINT);
+                    gb.setUserSituation(TexasHoldemConstants.YOUR_TURN);
+                    // ボタンの活性
+                    caseOfBetBtnSet();
+                } else {
+                    // チェックの場合
+                    opponentCheck();
+                    gb.setUserSituation(TexasHoldemConstants.YOUR_TURN);
 
-			// ユーザーのオールインフラグが立っていた場合の分岐処理
-			if(gb.getUserAllInFlag()) {
+                    // ボタンの活性
+                    caseOfCheckBtnSet();
+                }
 
-			}else {
-				// CPUのアクション及び情報設定
-				opponentCheck();
-			}
+                break;
 
+            case "ベット":
 
-			break;
+                // ランダム生成
+                int betRan = (int) (Math.random() * 10);
 
-		case "チェック":
+                // CPUアクションの確率分岐(10%でフォールド、20%でレイズ、70%でコール)
+                if (betRan == 0) {
+                    // フォールドの場合
+                    opponentFold();
 
-			// 局面を進行させる
-			//			betRoundStepDefault();
+                } else if (betRan == 1 || betRan == 2) {
+                    // レイズの場合
+                    opponentRaise();
+                    gb.setUserSituation(TexasHoldemConstants.YOUR_TURN);
+                    // ボタンの活性
+                    caseOfRaiseBtnSet();
 
-			break;
+                } else {
+                    // コールの場合
+                    opponentCall();
 
-		case "フォールド":
-			break;
-		}
-	}
+                    // 局面を進行させる
+                    //				betRoundStepDefault();
+                }
 
-	/**
-	 * フロップ、ターン、リバー時の各ボタンアクション選択時のCPU対戦の分岐処理です。
-	 */
-	private void defaultUserActoinBranchingProcess() {
+                break;
 
-		allBtnFalse();
+            case "レイズ":
 
-		switch(gb.getUserAction()) {
+                // ランダム生成
+                int raiseRan = (int) (Math.random() * 10);
 
-		case "":
+                // 確率分岐(10%でフォールド、90%でコール)
+                if (raiseRan == 0) {
 
-			// ランダム生成
-			int ran = (int)(Math.random() * 10);
+                    opponentFold();
 
-			// 確率分岐(10%でベット、90%でチェック)
-			if(ran == 0) {
-				// ベットの場合
-				opponentBet(TexasHoldemConstants.CPU_BET_POINT);
-				gb.setUserSituation(TexasHoldemConstants.YOUR_TURN);
-				// ボタンの活性
-				caseOfBetBtnSet();
-			}else {
-				// チェックの場合
-				opponentCheck();
-				gb.setUserSituation(TexasHoldemConstants.YOUR_TURN);
+                } else {
+                    // コールの場合
+                    opponentCall();
 
-				// ボタンの活性
-				caseOfCheckBtnSet();
-			}
+                }
+                break;
 
-			break;
+            case "コール":
 
-		case "ベット":
+                // 局面を進行させる
+                //			betRoundStepDefault();
+                break;
 
-			// ランダム生成
-			int betRan = (int)(Math.random() * 10);
+            case "チェック":
 
-			// CPUアクションの確率分岐(10%でフォールド、20%でレイズ、70%でコール)
-			if(betRan == 0) {
-				// フォールドの場合
-				opponentFold();
+                // ランダム生成
+                int checkRan = (int) (Math.random() * 10);
 
-			}else if(betRan == 1 || betRan == 2){
-				// レイズの場合
-				opponentRaise();
-				gb.setUserSituation(TexasHoldemConstants.YOUR_TURN);
-				// ボタンの活性
-				caseOfRaiseBtnSet();
+                // 確率分岐(10%でベット、90%でチェック)
+                if (checkRan == 0) {
 
-			}else {
-				// コールの場合
-				opponentCall();
-
-				// 局面を進行させる
-				//				betRoundStepDefault();
-
-			}
-
-			break;
-
-		case "レイズ":
-
-			// ランダム生成
-			int raiseRan = (int)(Math.random() * 10);
-
-			// 確率分岐(10%でフォールド、90%でコール)
-			if(raiseRan == 0) {
-
-				opponentFold();
-
-			}else {
-				// コールの場合
-				opponentCall();
-
-			}
-			break;
-
-		case "コール":
-
-			// 局面を進行させる
-			//			betRoundStepDefault();
-
-			break;
-
-		case "チェック":
-
-			// ランダム生成
-			int checkRan = (int)(Math.random() * 10);
-
-			// 確率分岐(10%でベット、90%でチェック)
-			if(checkRan == 0) {
-
-				opponentBet(TexasHoldemConstants.CPU_BET_POINT);
-				gb.setUserSituation(TexasHoldemConstants.YOUR_TURN);
-				// ボタンの活性
-				caseOfBetBtnSet();
-			}else {
-
-				// チェック
-				opponentCheck();
-
-				// 局面を進行させる
-				//				betRoundStepDefault();
-			}
-			break;
-
-		case "フォールド":
-
-			break;
-		}
-	}
-
-	/**
-	 * ベット局面を進行させる処理
-	 */
-	private void betRoundStepDefault() {
-
-		// ユーザーか対戦相手がオールイン時の分岐処理です。
-		if(gb.getUserAllInFlag() || gb.getOpponentAllInFlag()) {
-
-			gb.setBetRound(betRound.SHOWDOWN.toString());
-
-		}else {
-			// 局面を進行させる
-			stepBetRoundBranching();
-		}
-
-
-		// 局面進行時の初期処理
-		betRoundStepInit();
-
-		betRoundBranchingProcess();
-	}
-
-	/**
-	 * ベット局面を進行させる際の分岐処理
-	 */
-	private void stepBetRoundBranching() {
-
-		//script
-
-
-		if(betRound.PREFLOP.toString().equals(gb.getBetRound())){
-			// プリフロップの場合
-			gb.setBetRound(betRound.FLOP.toString());
-		}else if(betRound.FLOP.toString().equals(gb.getBetRound())) {
-			// フロップの場合
-			gb.setBetRound(betRound.TURN.toString());
-		}else if(betRound.TURN.toString().equals(gb.getBetRound())) {
-			// ターンの場合
-			gb.setBetRound(betRound.RIVER.toString());
-		}else {
-			// リバーの場合
-			gb.setBetRound(betRound.SHOWDOWN.toString());
-		}
-
-	}
-
-	/**
-	 * 局面進行時の初期処理をします。
-	 */
-	private void betRoundStepInit() {
-
-		gb.setUserAction("");
-		gb.setUserActionMsg("");
-		gb.setOpponentAction("");
-		gb.setOpponentActionMsg("");
-		gb.setCurrentUserBetPoint(0);
-		gb.setCurrentOpponentBetPoint(0);
-
-	}
-
-	/**
-	 * 全ボタンアクションを非活性にします。
-	 */
-	private void allBtnFalse() {
-
-		gb.setBetBtnDisabled(true);
-		gb.setRaiseBtnDisabled(true);
-		gb.setCallBtnDisabled(true);
-		gb.setCheckBtnDisabled(true);
-		gb.setFoldBtnDisabled(true);
-	}
-
-	/**
-	 * ベット局面進行時にユーザーがSB時だった場合の全ボタンアクションの活性を設定します。
-	 */
-	private void caseOfSbBtnSet() {
-
-		gb.setBetBtnDisabled(true);
-		gb.setRaiseBtnDisabled(false);
-		gb.setCallBtnDisabled(false);
-		gb.setCheckBtnDisabled(true);
-		gb.setFoldBtnDisabled(false);
-	}
-
-	/**
-	 * ベット局面進行時にユーザーがBB時だった場合の全ボタンアクションの活性を設定します。
-	 */
-	private void caseOfBbBtnSet() {
-
-		gb.setBetBtnDisabled(false);
-		gb.setRaiseBtnDisabled(true);
-		gb.setCallBtnDisabled(true);
-		gb.setCheckBtnDisabled(false);
-		gb.setFoldBtnDisabled(false);
-	}
-
-	/**
-	 * 対戦相手のアクションがベットだった場合の全ボタンアクションの活性を設定します。
-	 */
-	private void caseOfBetBtnSet() {
-
-		gb.setBetBtnDisabled(true);
-		gb.setRaiseBtnDisabled(false);
-
-		// 既にベットしているかどうかでレイズするポイントの分岐処理
-		if(gb.getCurrentUserBetPoint() == 0) {
-			gb.setRaiseMin(gb.getCurrentOpponentBetPoint() * 2);
-		}else {
-			gb.setRaiseMin(gb.getCurrentOpponentBetPoint() * 2 - gb.getCurrentUserBetPoint());
-		}
-		gb.setCallBtnDisabled(false);
-		gb.setCheckBtnDisabled(true);
-		gb.setFoldBtnDisabled(false);
-	}
-
-	/**
-	 * 対戦相手のアクションがレイズだった場合の全ボタンアクションの活性を設定します。
-	 */
-	private void caseOfRaiseBtnSet() {
-
-		gb.setBetBtnDisabled(true);
-		gb.setRaiseBtnDisabled(false);
-
-		// 既にベットしているかどうかでレイズするポイントの分岐処理
-		if(gb.getCurrentUserBetPoint() == 0) {
-			gb.setRaiseMin(gb.getCurrentOpponentBetPoint() * 2);
-		}else {
-			gb.setRaiseMin(gb.getCurrentOpponentBetPoint() * 2 - gb.getCurrentUserBetPoint());
-		}
-		gb.setCallBtnDisabled(false);
-		gb.setCheckBtnDisabled(true);
-		gb.setFoldBtnDisabled(false);
-	}
-
-	/**
-	 * 対戦相手のアクションがチェックだった場合の全ボタンアクションの活性を設定します。
-	 */
-	private void caseOfCheckBtnSet() {
-
-		gb.setBetBtnDisabled(false);
-		gb.setRaiseBtnDisabled(true);
-		gb.setCallBtnDisabled(true);
-		gb.setCheckBtnDisabled(false);
-		gb.setFoldBtnDisabled(false);
-	}
-
-	/**
-	 * 対戦相手のアクションがコールだった場合の全ボタンアクションの活性を設定します。
-	 */
-	private void caseOfCallBtnSet() {
-
-		gb.setBetBtnDisabled(true);
-		gb.setRaiseBtnDisabled(false);
-
-		// 既にベットしているかどうかでレイズするポイントの分岐処理
-		if(gb.getCurrentUserBetPoint() == 0) {
-			gb.setRaiseMin(gb.getCurrentOpponentBetPoint() * 2);
-		}else {
-			gb.setRaiseMin(gb.getCurrentOpponentBetPoint() * 2 - gb.getCurrentUserBetPoint());
-		}
-		gb.setCallBtnDisabled(true);
-		gb.setCheckBtnDisabled(false);
-		gb.setFoldBtnDisabled(false);
-	}
-
-	/**
-	 * 対戦相手がベットアクション選択時の動作を設定します。
-	 */
-	private void opponentBet(int betPoint) {
-
-		// 対戦相手情報の設定
-		gb.setOpponentAction(action.BET.toString());
-		gb.setOpponentActionMsg(gb.getOpponentAction() + betPoint);
-
-		// 対戦相手の所持ポイントの変動と合計ベットポイントの変動
-		gb.setOpponentPoint(gb.getOpponentPoint() - betPoint);
-		gb.setOpponentTotalBetPoint(gb.getOpponentTotalBetPoint() + betPoint);
-
-		// 対戦相手の現在のベット局面での合計ベットポイントの設定
-		gb.setCurrentOpponentBetPoint(betPoint);
-
-		// ユーザー情報の設定
-		gb.setUserTurn(true);
-		//			gb.setUserSituation(TexasHoldemConstants.YOUR_TURN);
-
-		// ポット情報の設定
-		gb.setPotPoint(gb.getPotPoint() + betPoint);
-	}
-
-	/**
-	 * 対戦相手がレイズアクション選択時の動作を設定します。
-	 */
-	public void opponentRaise() {
-
-		// レイズするポイント(最低レイズポイントでレイズする)
-		int raiseCpuPoint;
-
-		// 既にベットしているかどうかでレイズするポイントの分岐処理
-		if(gb.getCurrentOpponentBetPoint() == 0) {
-			raiseCpuPoint = gb.getCurrentUserBetPoint() * 2;
-		}else {
-			raiseCpuPoint = gb.getCurrentUserBetPoint() * 2 - gb.getCurrentOpponentBetPoint();
-		}
-
-		// 対戦相手情報の設定
-		gb.setOpponentAction(action.RAISE.toString());
-		gb.setOpponentActionMsg(gb.getOpponentAction() + (raiseCpuPoint + gb.getCurrentOpponentBetPoint()));
-
-		// 対戦相手の所持ポイントの変動と合計ベットポイントの変動
-		gb.setOpponentPoint(gb.getOpponentPoint() - raiseCpuPoint);
-		gb.setOpponentTotalBetPoint(gb.getOpponentTotalBetPoint() + raiseCpuPoint);
-
-		// 対戦相手の現在のベット局面での合計ベットポイントの設定
-		gb.setCurrentOpponentBetPoint(gb.getCurrentOpponentBetPoint() + raiseCpuPoint);
-
-		// ユーザー情報の設定
-		//			gb.setUserSituation(TexasHoldemConstants.YOUR_TURN);
-		gb.setUserTurn(true);
-		gb.setUserBetPoint(0);
-
-		// ポット情報の設定
-		gb.setPotPoint(gb.getPotPoint() + raiseCpuPoint);
-
-	}
-
-	/**
-	 * 対戦相手がコールアクション選択時の動作を設定します。
-	 */
-	private void opponentCall() {
-
-		// 対戦相手情報の設定
-		gb.setOpponentAction(action.CALL.toString());
-
-		// コールする際に追加するベットポイント数
-		int callPoint = gb.getCurrentUserBetPoint() - gb.getCurrentOpponentBetPoint();
-
-		if(gb.getOpponentPoint() - callPoint <= 0) {
-
-			// 現在の対戦相手の所持ポイントよりもコールしたポイントが多い場合(オールイン時)
-			gb.setOpponentAllInFlag(true);
-			gb.setOpponentActionMsg(TexasHoldemConstants.ALL_IN +  gb.getOpponentAction());
-			gb.setCurrentOpponentBetPoint(gb.getOpponentPoint() + gb.getCurrentOpponentBetPoint());
-
-			gb.setOpponentTotalBetPoint(gb.getOpponentTotalBetPoint() + gb.getCurrentOpponentBetPoint());
-
-			// ポット情報の設定
-			gb.setPotPoint(gb.getPotPoint() + gb.getOpponentPoint());
-			gb.setOpponentPoint(0);
-		}else {
-
-			// 対戦相手情報の設定
-			gb.setOpponentActionMsg(gb.getOpponentAction() + (callPoint + gb.getCurrentOpponentBetPoint()));
-			gb.setCurrentOpponentBetPoint(callPoint + gb.getCurrentOpponentBetPoint());
-			gb.setOpponentPoint(gb.getOpponentPoint() - callPoint);
-			gb.setOpponentTotalBetPoint(gb.getOpponentTotalBetPoint() + callPoint);
-			gb.setUserTurn(true);
-			//				gb.setUserSituation(TexasHoldemConstants.YOUR_TURN);
-
-			// ポット情報の設定
-			gb.setPotPoint(gb.getPotPoint() + callPoint);
-
-		}
-	}
-
-	/**
-	 * 対戦相手がチェックアクション選択時の動作を設定します。
-	 */
-	private void opponentCheck() {
-
-		// 対戦相手情報の設定
-		gb.setOpponentAction(action.CHECK.toString());
-		gb.setOpponentActionMsg(gb.getOpponentAction());
-
-	}
-
-	/**
-	 * 対戦相手がフォールドアクション選択時の動作を設定します。
-	 */
-	private void opponentFold() {
-
-		gb.setOpponentAction(action.FOLD.toString());
-		gb.setOpponentActionMsg(gb.getOpponentAction());
-
-	}
+                    opponentBet(TexasHoldemConstants.CPU_BET_POINT);
+                    gb.setUserSituation(TexasHoldemConstants.YOUR_TURN);
+                    // ボタンの活性
+                    caseOfBetBtnSet();
+                } else {
+
+                    // チェック
+                    opponentCheck();
+
+                    // 局面を進行させる
+                    //				betRoundStepDefault();
+                }
+                break;
+
+        }
+    }
+
+    /**
+     * ベット局面を進行させる処理
+     */
+    private void betRoundStepDefault() {
+
+        // ユーザーか対戦相手がオールイン時の分岐処理です。
+        if (gb.getUserAllInFlag() || gb.getOpponentAllInFlag()) {
+
+            gb.setBetRound(betRound.SHOWDOWN.toString());
+
+        } else {
+            // 局面を進行させる
+            stepBetRoundBranching();
+        }
+
+        // 局面進行時の初期処理
+        betRoundStepInit();
+
+        betRoundBranchingProcess();
+    }
+
+    /**
+     * ベット局面を進行させる際の分岐処理
+     */
+    private void stepBetRoundBranching() {
+
+        //script
+        if (betRound.PREFLOP.toString().equals(gb.getBetRound())) {
+            // プリフロップの場合
+            gb.setBetRound(betRound.FLOP.toString());
+        } else if (betRound.FLOP.toString().equals(gb.getBetRound())) {
+            // フロップの場合
+            gb.setBetRound(betRound.TURN.toString());
+        } else if (betRound.TURN.toString().equals(gb.getBetRound())) {
+            // ターンの場合
+            gb.setBetRound(betRound.RIVER.toString());
+        } else {
+            // リバーの場合
+            gb.setBetRound(betRound.SHOWDOWN.toString());
+        }
+
+    }
+
+    /**
+     * 局面進行時の初期処理をします。
+     */
+    private void betRoundStepInit() {
+
+        gb.setUserAction("");
+        gb.setUserActionMsg("");
+        gb.setOpponentAction("");
+        gb.setOpponentActionMsg("");
+        gb.setCurrentUserBetPoint(0);
+        gb.setCurrentOpponentBetPoint(0);
+
+    }
+
+    /**
+     * 全ボタンアクションを非活性にします。
+     */
+    private void allBtnFalse() {
+
+        gb.setBetBtnDisabled(true);
+        gb.setRaiseBtnDisabled(true);
+        gb.setCallBtnDisabled(true);
+        gb.setCheckBtnDisabled(true);
+        gb.setFoldBtnDisabled(true);
+    }
+
+    /**
+     * ベット局面進行時にユーザーがSB時だった場合の全ボタンアクションの活性を設定します。
+     */
+    private void caseOfSbBtnSet() {
+
+        gb.setBetBtnDisabled(true);
+        gb.setRaiseBtnDisabled(false);
+        gb.setCallBtnDisabled(false);
+        gb.setCheckBtnDisabled(true);
+        gb.setFoldBtnDisabled(false);
+    }
+
+    /**
+     * ベット局面進行時にユーザーがBB時だった場合の全ボタンアクションの活性を設定します。
+     */
+    private void caseOfBbBtnSet() {
+
+        gb.setBetBtnDisabled(false);
+        gb.setRaiseBtnDisabled(true);
+        gb.setCallBtnDisabled(true);
+        gb.setCheckBtnDisabled(false);
+        gb.setFoldBtnDisabled(false);
+    }
+
+    /**
+     * 対戦相手のアクションがベットだった場合の全ボタンアクションの活性を設定します。
+     */
+    private void caseOfBetBtnSet() {
+
+        gb.setBetBtnDisabled(true);
+        gb.setRaiseBtnDisabled(false);
+
+        // 既にベットしているかどうかでレイズするポイントの分岐処理
+        if (gb.getCurrentUserBetPoint() == 0) {
+            gb.setRaiseMin(gb.getCurrentOpponentBetPoint() * 2);
+        } else {
+            gb.setRaiseMin(gb.getCurrentOpponentBetPoint() * 2 - gb.getCurrentUserBetPoint());
+        }
+        gb.setCallBtnDisabled(false);
+        gb.setCheckBtnDisabled(true);
+        gb.setFoldBtnDisabled(false);
+    }
+
+    /**
+     * 対戦相手のアクションがレイズだった場合の全ボタンアクションの活性を設定します。
+     */
+    private void caseOfRaiseBtnSet() {
+
+        gb.setBetBtnDisabled(true);
+        gb.setRaiseBtnDisabled(false);
+
+        // 既にベットしているかどうかでレイズするポイントの分岐処理
+        if (gb.getCurrentUserBetPoint() == 0) {
+            gb.setRaiseMin(gb.getCurrentOpponentBetPoint() * 2);
+        } else {
+            gb.setRaiseMin(gb.getCurrentOpponentBetPoint() * 2 - gb.getCurrentUserBetPoint());
+        }
+        gb.setCallBtnDisabled(false);
+        gb.setCheckBtnDisabled(true);
+        gb.setFoldBtnDisabled(false);
+    }
+
+    /**
+     * 対戦相手のアクションがチェックだった場合の全ボタンアクションの活性を設定します。
+     */
+    private void caseOfCheckBtnSet() {
+
+        gb.setBetBtnDisabled(false);
+        gb.setRaiseBtnDisabled(true);
+        gb.setCallBtnDisabled(true);
+        gb.setCheckBtnDisabled(false);
+        gb.setFoldBtnDisabled(false);
+    }
+
+    /**
+     * 対戦相手のアクションがコールだった場合の全ボタンアクションの活性を設定します。
+     */
+    private void caseOfCallBtnSet() {
+
+        gb.setBetBtnDisabled(true);
+        gb.setRaiseBtnDisabled(false);
+
+        // 既にベットしているかどうかでレイズするポイントの分岐処理
+        if (gb.getCurrentUserBetPoint() == 0) {
+            gb.setRaiseMin(gb.getCurrentOpponentBetPoint() * 2);
+        } else {
+            gb.setRaiseMin(gb.getCurrentOpponentBetPoint() * 2 - gb.getCurrentUserBetPoint());
+        }
+        gb.setCallBtnDisabled(true);
+        gb.setCheckBtnDisabled(false);
+        gb.setFoldBtnDisabled(false);
+    }
+
+    /**
+     * 対戦相手がベットアクション選択時の動作を設定します。
+     */
+    private void opponentBet(int betPoint) {
+
+        // 対戦相手情報の設定
+        gb.setOpponentAction(action.BET.toString());
+        gb.setOpponentActionMsg(gb.getOpponentAction() + betPoint);
+
+        // 対戦相手の所持ポイントの変動と合計ベットポイントの変動
+        gb.setOpponentPoint(gb.getOpponentPoint() - betPoint);
+        gb.setOpponentTotalBetPoint(gb.getOpponentTotalBetPoint() + betPoint);
+
+        // 対戦相手の現在のベット局面での合計ベットポイントの設定
+        gb.setCurrentOpponentBetPoint(betPoint);
+
+        // オールイン時(全対戦相手ポイントをベットした場合)の処理です。
+        if (gb.getOpponentPoint() <= 0) {
+            gb.setOpponentActionMsg(TexasHoldemConstants.ALL_IN + gb.getOpponentAction());
+            gb.setOpponentAllInFlag(true);
+        }
+
+        // ユーザー情報の設定
+        gb.setUserTurn(true);
+        gb.setUserSituation(TexasHoldemConstants.YOUR_TURN);
+
+        // ポット情報の設定
+        gb.setPotPoint(gb.getPotPoint() + betPoint);
+    }
+
+    /**
+     * 対戦相手がレイズアクション選択時の動作を設定します。
+     */
+    public void opponentRaise() {
+
+        // レイズするポイント(最低レイズポイントでレイズする)
+        int raiseCpuPoint;
+
+        // 既にベットしているかどうかでレイズするポイントの分岐処理
+        if (gb.getCurrentOpponentBetPoint() == 0) {
+            raiseCpuPoint = gb.getCurrentUserBetPoint() * 2;
+        } else {
+            raiseCpuPoint = gb.getCurrentUserBetPoint() * 2 - gb.getCurrentOpponentBetPoint();
+        }
+
+        // オールイン時(全対戦相手ポイントをレイズした場合)の処理です。
+        if ((gb.getOpponentPoint() - raiseCpuPoint) <= 0) {
+            raiseCpuPoint = gb.getOpponentPoint();
+            gb.setOpponentAllInFlag(true);
+        }
+
+        // 対戦相手情報の設定
+        gb.setOpponentAction(action.RAISE.toString());
+        gb.setOpponentActionMsg(gb.getOpponentAction() + (raiseCpuPoint + gb.getCurrentOpponentBetPoint()));
+
+        // 対戦相手の所持ポイントの変動と合計ベットポイントの変動
+        gb.setOpponentPoint(gb.getOpponentPoint() - raiseCpuPoint);
+        gb.setOpponentTotalBetPoint(gb.getOpponentTotalBetPoint() + raiseCpuPoint);
+
+        // 対戦相手の現在のベット局面での合計ベットポイントの設定
+        gb.setCurrentOpponentBetPoint(gb.getCurrentOpponentBetPoint() + raiseCpuPoint);
+
+        // ユーザー情報の設定
+        gb.setUserSituation(TexasHoldemConstants.YOUR_TURN);
+        gb.setUserTurn(true);
+        gb.setUserBetPoint(0);
+
+        if (gb.getOpponentAllInFlag()) {
+            gb.setOpponentActionMsg(TexasHoldemConstants.ALL_IN + gb.getOpponentAction());
+        }
+
+        // ポット情報の設定
+        gb.setPotPoint(gb.getPotPoint() + raiseCpuPoint);
+
+    }
+
+    /**
+     * 対戦相手がコールアクション選択時の動作を設定します。
+     */
+    private void opponentCall() {
+
+        // 対戦相手情報の設定
+        gb.setOpponentAction(action.CALL.toString());
+
+        // コールする際に追加するベットポイント数
+        int callPoint = gb.getCurrentUserBetPoint() - gb.getCurrentOpponentBetPoint();
+
+        if (gb.getOpponentPoint() - callPoint <= 0) {
+
+            // 現在の対戦相手の所持ポイントよりもコールしたポイントが多い場合(オールイン時)
+            gb.setOpponentAllInFlag(true);
+            gb.setOpponentActionMsg(TexasHoldemConstants.ALL_IN + gb.getOpponentAction());
+            gb.setCurrentOpponentBetPoint(gb.getOpponentPoint() + gb.getCurrentOpponentBetPoint());
+
+            gb.setOpponentTotalBetPoint(gb.getOpponentTotalBetPoint() + gb.getCurrentOpponentBetPoint());
+
+            // ポット情報の設定
+            gb.setPotPoint(gb.getPotPoint() + gb.getOpponentPoint());
+            gb.setOpponentPoint(0);
+        } else {
+
+            // 対戦相手情報の設定
+            gb.setOpponentActionMsg(gb.getOpponentAction() + (callPoint + gb.getCurrentOpponentBetPoint()));
+            gb.setCurrentOpponentBetPoint(callPoint + gb.getCurrentOpponentBetPoint());
+            gb.setOpponentPoint(gb.getOpponentPoint() - callPoint);
+            gb.setOpponentTotalBetPoint(gb.getOpponentTotalBetPoint() + callPoint);
+            gb.setUserTurn(true);
+            //				gb.setUserSituation(TexasHoldemConstants.YOUR_TURN);
+
+            // ポット情報の設定
+            gb.setPotPoint(gb.getPotPoint() + callPoint);
+
+        }
+    }
+
+    /**
+     * 対戦相手がチェックアクション選択時の動作を設定します。
+     */
+    private void opponentCheck() {
+
+        // 対戦相手情報の設定
+        gb.setOpponentAction(action.CHECK.toString());
+        gb.setOpponentActionMsg(gb.getOpponentAction());
+
+    }
+
+    /**
+     * 対戦相手がフォールドアクション選択時の動作を設定します。
+     */
+    private void opponentFold() {
+
+        gb.setOpponentAction(action.FOLD.toString());
+        gb.setOpponentActionMsg(gb.getOpponentAction());
+
+    }
+
+    /**
+     * 各レコード情報を作成します。
+     */
+    private void registerCreate() {
+        gameMainRegisterService.createDetailBattleRecordTableInfo();
+        gameMainRegisterService.createBattleRecordTableInfo();
+    }
 
 }

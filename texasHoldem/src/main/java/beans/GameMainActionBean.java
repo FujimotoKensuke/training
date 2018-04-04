@@ -13,139 +13,150 @@ import service.GameMainRegisterService;
 import service.GameMainService;
 import service.GameMainTimerService;
 import service.RaiseBtnService;
-import util.DialogUtil;
 
 /**
  * ゲームメイン画面のアクションビーンクラスです。
  */
 @Named
 @RequestScoped
-public class GameMainActionBean{
+public class GameMainActionBean {
 
-	@Inject
-	private GameMainInitService gameMainInitService;
+    @Inject
+    private GameMainInitService gameMainInitService;
 
-	@Inject
-	private GameMainService gameMainService;
+    @Inject
+    private GameMainService gameMainService;
 
-	@Inject
-	private BetBtnService betBtnService;
+    @Inject
+    private BetBtnService betBtnService;
 
-	@Inject
-	private RaiseBtnService raiseBtnService;
+    @Inject
+    private RaiseBtnService raiseBtnService;
 
-	@Inject
-	private CallBtnService callBtnService;
+    @Inject
+    private CallBtnService callBtnService;
 
-	@Inject
-	private CheckBtnService checkBtnService;
+    @Inject
+    private CheckBtnService checkBtnService;
 
-	@Inject
-	private FoldBtnService foldBtnService;
+    @Inject
+    private FoldBtnService foldBtnService;
 
-	@Inject
-	private GameMainTimerService gameMainTimerService;
+    @Inject
+    private GameMainTimerService gameMainTimerService;
 
-	@Inject
-	private GameMainRegisterService gameMainRegisterService;
+    @Inject
+    private GameMainRegisterService gameMainRegisterService;
 
-	/**
-	 * 初期表示処理です。
-	 */
-	public void init() throws Exception{
+    /**
+     * 初期表示処理です。
+     *
+     * @throws Exception
+     */
+    public void init() throws Exception {
 
-		gameMainInitService.execute();
+        gameMainInitService.execute();
 
-	}
+    }
 
-	/**
-	 * ベットボタン押下時の処理です。
-	 */
-	public void betAction() throws Exception{
+    /**
+     * ベットボタン押下時の処理です。
+     *
+     * @throws Exception
+     */
+    public void betAction() throws Exception {
 
-		betBtnService.execute();
-		gameMainService.execute();
+        betBtnService.execute();
+        gameMainService.timerScriptExecute();
 
+    }
 
-	}
+    /**
+     * レイズボタン押下時の処理です。
+     *
+     * @throws Exception
+     */
+    public void raiseAction() throws Exception {
 
-	/**
-	 * レイズボタン押下時の処理です。
-	 */
-	public void raiseAction() throws Exception{
+        raiseBtnService.execute();
+        gameMainService.timerScriptExecute();
 
-		raiseBtnService.execute();
-		gameMainService.execute();
+    }
 
-	}
+    /**
+     * コールボタン押下時の処理です。
+     *
+     * @throws Exception
+     */
+    public void callAction() throws Exception {
 
-	/**
-	 * コールボタン押下時の処理です。
-	 */
-	public void callAction() throws Exception{
+        callBtnService.execute();
+        gameMainService.timerScriptExecute();
+    }
 
-		callBtnService.execute();
-		gameMainService.execute();
+    /**
+     * チェックボタン押下時の処理です。
+     *
+     * @throws Exception
+     */
+    public void checkAction() throws Exception {
 
-	}
+        checkBtnService.execute();
+        gameMainService.timerScriptExecute();
+    }
 
-	/**
-	 * チェックボタン押下時の処理です。
-	 */
-	public void checkAction() throws Exception{
+    /**
+     * フォールドボタン押下時の処理です。
+     *
+     * @throws Exception
+     */
+    public void foldAction() throws Exception {
 
-		checkBtnService.execute();
-		gameMainService.execute();
+        foldBtnService.execute();
+        gameMainService.execute();
 
-	}
+    }
 
-	/**
-	 * フォールドボタン押下時の処理です。
-	 */
-	public void foldAction() throws Exception{
+    /**
+     * モーダルダイアログを閉じます。
+     *
+     * @throws Exception
+     */
+    public void closeDialog() throws Exception {
 
-		foldBtnService.execute();
-		gameMainService.execute();
+        gameMainInitService.execute();
+        gameMainService.execute();
 
-	}
+    }
 
-	/**
-	 * モーダルダイアログを閉じます。
-	 * @return
-	 * @throws Exception
-	 */
-	public void closeDialog() throws Exception{
+    /**
+     * ベット局面を進行させるタイマーです。
+     *
+     * @throws Exception
+     */
+    public void stepBetRound() throws Exception {
+        gameMainTimerService.execute();
+    }
 
-		DialogUtil.modalDialogClose();
-		gameMainInitService.execute();
-		gameMainService.execute();
+    /**
+     * 局面を進行時のタイマーです。
+     *
+     * @throws Exception
+     */
+    public void stepRound() throws Exception {
+        gameMainService.execute();
+    }
 
-	}
+    /**
+     * ゲーム終了時のメソッドです。
+     *
+     * @return
+     * @throws Exception
+     */
+    public String gameFinish() throws Exception {
 
-	/**
-	 * ベット局面を進行させるタイマーです。
-	 * @return
-	 * @throws Exception
-	 */
-	public void stepBetRound() throws Exception{
-		System.out.println("タイマー1");
-		gameMainTimerService.execute();
-	}
-
-	/**
-	 * 局面を進行時のタイマーです。
-	 * @return
-	 * @throws Exception
-	 */
-	public void stepRound() throws Exception{
-		System.out.println("タイマー2");
-		gameMainService.execute();
-	}
-
-	public String gameFinish() throws Exception{
-
-		gameMainRegisterService.execute();
-		return "/menu.xhtml?faces-redirect=true";
-	}
+        gameMainRegisterService.execute();
+        return "/menu.xhtml?faces-redirect=true";
+    }
 
 }

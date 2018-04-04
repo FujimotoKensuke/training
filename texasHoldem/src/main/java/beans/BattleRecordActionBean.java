@@ -14,48 +14,50 @@ import util.DialogUtil;
 @RequestScoped
 public class BattleRecordActionBean {
 
-	@Inject
-	BattleRecordService battleRecordService;
+    @Inject
+    BattleRecordService battleRecordService;
 
-	/**
-	 * 初期表示処理です。
-	 */
-	public void init() throws Exception{
+    /**
+     * 初期表示処理です。
+     *
+     * @throws java.lang.Exception
+     */
+    public void init() throws Exception {
 
-		battleRecordService.execute();
-		System.out.println("呼ばれたよ");
+        battleRecordService.execute();
 
-	}
+    }
 
-	/**
+    /**
      * モーダルダイアログを表示します。
-     * @return
+     *
      * @throws Exception
      */
-	public void showDialog() throws Exception{
+    public void showDialog() throws Exception {
 
-		battleRecordService.setDetail();
-		DialogUtil.modalDialogShow("detailBattleRecordDialog.xhtml",700);
+        battleRecordService.setDetail();
+        DialogUtil.modalDialogShow("detailBattleRecordDialog.xhtml", 700);
 
-	}
+    }
 
-	/**
+    /**
      * モーダルダイアログを閉じます。
+     *
+     * @throws Exception
+     */
+    public void closeDialog() throws Exception {
+
+        DialogUtil.modalDialogClose();
+
+    }
+
+    /**
+     * 戻るボタンのメソッドです。メイン画面に遷移します。
+     *
      * @return
      * @throws Exception
      */
-	public void closeDialog() throws Exception{
-
-		DialogUtil.modalDialogClose();
-
-	}
-
-	/**
-	 * 戻るボタンのメソッドです。メイン画面に遷移します。
-	 * @return
-	 * @throws Exception
-	 */
-	public String backBottun() throws Exception {
-		return "/menu.xhtml?faces-redirect=true";
-	}
+    public String backBottun() throws Exception {
+        return "/menu.xhtml?faces-redirect=true";
+    }
 }

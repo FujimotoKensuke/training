@@ -1,296 +1,321 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml"
-	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
-	xmlns:h="http://xmlns.jcp.org/jsf/html"
-	xmlns:f="http://xmlns.jcp.org/jsf/core"
-	xmlns:c="http://xmlns.jcp.org/jsp/jstl/core"
-	xmlns:fn="http://java.sun.com/jsp/jstl/functions"
-	xmlns:p="http://primefaces.org/ui"
-	xmlns:pe="http://primefaces.org/ui/extensions">
-<h:head>
-	<h:outputStylesheet library="css" name="texasHoldemStyle.css" />
-	<script>
-		function handleComplete() {
-			PF('stepBetRoundTimer1').stop(true);
-			PF('mglasspane').show();
-		}
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:c="http://xmlns.jcp.org/jsp/jstl/core"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:pe="http://primefaces.org/ui/extensions">
+    <h:head>
+        <h:outputStylesheet library="css" name="texasHoldemStyle.css" />
+        <h:outputScript library="js" name="gamemain.js" target="head" />
+    </h:head>
+    <h:body styleClass="bodycolor">
+        <f:metadata>
+            <f:viewAction action="#{gameMainActionBean.init()}" onPostback="false" />
+        </f:metadata>
+        <h:form id="timers">
+            <pe:timer timeout="3" singleRun="false"
+                      listener="#{gameMainActionBean.stepBetRound()}"
+                      visible="false"
+                      update="gamedisp" autoStart="false" widgetVar="stepBetRoundTimer"
+                      onsuccess="PF('stepBetRoundTimer').stop(true);"
+                      />
+            <pe:timer timeout="1" singleRun="false"
+                      listener="#{gameMainActionBean.stepRound()}" visible="false"
+                      update="gamedisp" autoStart="false" widgetVar="stepRoundTimer"
+                      onsuccess="PF('stepRoundTimer').stop(true)" />
 
-		function handle() {
-			PF('mglasspane').close();
-
-		}
-	</script>
-</h:head>
-<h:body>
-	<f:metadata>
-		<f:viewAction action="#{gameMainActionBean.init()}" onPostback="false" />
-	</f:metadata>
-	<h:form id="timers">
-		<pe:timer timeout="2" singleRun="false"
-			listener="#{gameMainActionBean.stepBetRound()}" visible="false"
-			update="gamedisp" autoStart="false" widgetVar="stepBetRoundTimer"
-			onsuccess="PF('stepBetRoundTimer').stop(true)" />
-		<pe:timer timeout="2" singleRun="false"
-			listener="#{gameMainActionBean.stepRound()}" visible="false"
-			update="gamedisp" autoStart="false" widgetVar="stepRoundTimer"
-			onsuccess="PF('stepRoundTimer').stop(true)" />
-	</h:form>
-	<div class="gamemain">
-		<h:form id="gamedisp">
-			<div class="round">
-				<table>
-					<tr>
-						<td><h:outputText value="ROUND" /></td>
-						<td class="roundtd" id="roundnumber"><h:outputText
-								value="#{gameBean.round}" /></td>
-					</tr>
-				</table>
-				<p class="betround" id="betround">
-					<h:outputText value="#{gameBean.betRound}" />
-				</p>
-			</div>
-			<div id="gameInfoDisp" class="opponentInfo">
-				<table class="opponent">
-					<tr>
-						<td class="betposition" id="betposition"><h:outputText
-								value="#{gameBean.opponentBlind}" /></td>
-						<td>対戦相手:</td>
-						<td><h:outputText value="#{gameBean.opponentName}" /></td>
-						<td>所持ポイント:</td>
-						<td id="opponentpoint"><h:outputText
-								value="#{gameBean.opponentPoint}" /></td>
-					</tr>
-				</table>
-				<p>
-					<c:if test="${gameBean.betRound == 'ショーダウン'}" var="flg1" />
-					<c:if test="${flg1}">
-						<h:graphicImage styleClass="cardimgc"
-							value="${'/resources/images/'+=gameBean.opponentCard[0]+='.png'}" />
-						<h:graphicImage styleClass="cardimgb"
-							value="${'/resources/images/'+=gameBean.opponentCard[1]+='.png'}" />
-					</c:if>
-					<c:if test="${!flg1}">
-						<h:graphicImage styleClass="cardimgc"
-							value="/resources/images/z02.png" />
-						<h:graphicImage styleClass="cardimgb"
-							value="/resources/images/z02.png" />
-					</c:if>
-				</p>
-			</div>
-			<div class="potinfo" id="potInfo">
-				<p>ポット</p>
-				<p id="pot">
-					<h:outputText value="#{gameBean.potPoint}" />
-				</p>
-			</div>
-			<div id="information" class="informations">
-				<table class="information">
-					<tr>
-						<td class="information1">information:</td>
-						<td class="information2">あいて</td>
-						<td class="information3" id="action"><h:outputText
-								value="#{gameBean.opponentActionMsg}" /></td>
-						<td class="information4" id="lastcard"><h:outputText
-								value="#{gameBean.opponentHand}" /></td>
-					</tr>
-				</table>
-				<p class="voicea"></p>
-				<p class="board">
-					<c:if test="${gameBean.betRound == 'プリフロップ'}">
-						<h:graphicImage styleClass="cardimga"
-							value="/resources/images/z02.png" />
-						<h:graphicImage styleClass="cardimgb"
-							value="/resources/images/z02.png" />
-						<h:graphicImage styleClass="cardimgb"
-							value="/resources/images/z02.png" />
-						<h:graphicImage styleClass="cardimgb"
-							value="/resources/images/z02.png" />
-						<h:graphicImage styleClass="cardimgb"
-							value="/resources/images/z02.png" />
-					</c:if>
-					<c:if test="${gameBean.betRound == 'フロップ'}">
-						<h:graphicImage styleClass="cardimga"
-							value="${'/resources/images/'+=gameBean.bordInfo[0]+='.png'}" />
-						<h:graphicImage styleClass="cardimgb"
-							value="${'/resources/images/'+=gameBean.bordInfo[1]+='.png'}" />
-						<h:graphicImage styleClass="cardimgb"
-							value="${'/resources/images/'+=gameBean.bordInfo[2]+='.png'}" />
-						<h:graphicImage styleClass="cardimgb"
-							value="/resources/images/z02.png" />
-						<h:graphicImage styleClass="cardimgb"
-							value="/resources/images/z02.png" />
-					</c:if>
-					<c:if test="${gameBean.betRound == 'ターン'}">
-						<h:graphicImage styleClass="cardimga"
-							value="${'/resources/images/'+=gameBean.bordInfo[0]+='.png'}" />
-						<h:graphicImage styleClass="cardimgb"
-							value="${'/resources/images/'+=gameBean.bordInfo[1]+='.png'}" />
-						<h:graphicImage styleClass="cardimgb"
-							value="${'/resources/images/'+=gameBean.bordInfo[2]+='.png'}" />
-						<h:graphicImage styleClass="cardimgb"
-							value="${'/resources/images/'+=gameBean.bordInfo[3]+='.png'}" />
-						<h:graphicImage styleClass="cardimgb"
-							value="/resources/images/z02.png" />
-					</c:if>
-					<c:if
-						test="${gameBean.betRound == 'リバー' || gameBean.betRound == 'ショーダウン'}">
-						<h:graphicImage styleClass="cardimga"
-							value="${'/resources/images/'+=gameBean.bordInfo[0]+='.png'}" />
-						<h:graphicImage styleClass="cardimgb"
-							value="${'/resources/images/'+=gameBean.bordInfo[1]+='.png'}" />
-						<h:graphicImage styleClass="cardimgb"
-							value="${'/resources/images/'+=gameBean.bordInfo[2]+='.png'}" />
-						<h:graphicImage styleClass="cardimgb"
-							value="${'/resources/images/'+=gameBean.bordInfo[3]+='.png'}" />
-						<h:graphicImage styleClass="cardimgb"
-							value="${'/resources/images/'+=gameBean.bordInfo[4]+='.png'}" />
-					</c:if>
-				</p>
-				<table class="information">
-					<tr>
-						<td class="information1">information:</td>
-						<td class="information2">あなた</td>
-						<td class="information3" id="useraction"><h:outputText
-								value="#{gameBean.userActionMsg}" /></td>
-						<td class="information4" id="userlastcard"><h:outputText
-								value="#{gameBean.userSituation}" /></td>
-					</tr>
-				</table>
-			</div>
-			<div class="useraction" id="userAction">
-				<h:panelGrid columns="3">
-					<p:slider minValue="#{gameBean.betMin}"
-						maxValue="#{gameBean.userPoint}" for="betarea" styleClass="slider"
-						disabled="#{gameBean.betBtnDisabled}">
-						<p:ajax event="slideEnd" process="betarea" />
-					</p:slider>
-					<p:inputText id="betarea" styleClass="inputText"
-						value="#{gameBean.userBetPoint}"
-						disabled="#{gameBean.betBtnDisabled}">
-						<f:validateLongRange minimum="1" maximum="#{gameBean.userPoint}" />
-					</p:inputText>
-					<h:commandButton value="ベット" disabled="#{gameBean.betBtnDisabled}"
-						actionListener="#{gameMainActionBean.betAction()}">
-						<f:ajax execute="timers betarea" render="timers gamedisp"
-							onevent="PF('stepBetRoundTimer').start()" />
-					</h:commandButton>
-				</h:panelGrid>
-				<h:panelGrid columns="3" styleClass="useractionmargin">
-					<p:slider minValue="#{gameBean.raiseMin}"
-						maxValue="#{gameBean.userPoint}" for="raisearea"
-						onSlideStart="#{gameBean.raiseMin}" styleClass="slider"
-						disabled="#{gameBean.raiseBtnDisabled}">
-						<p:ajax event="slideEnd" process="raisearea" />
-					</p:slider>
-					<p:inputText id="raisearea" styleClass="inputText"
-						value="#{gameBean.userRaisePoint}"
-						disabled="#{gameBean.raiseBtnDisabled}">
-						<f:validateLongRange minimum="#{gameBean.raiseMin}"
-							maximum="#{gameBean.userPoint}" />
-					</p:inputText>
-					<h:commandButton value="レイズ"
-						disabled="#{gameBean.raiseBtnDisabled}"
-						actionListener="#{gameMainActionBean.raiseAction()}">
-						<f:ajax execute="timers raisearea" render="timers gamedisp"
-							onevent="PF('stepBetRoundTimer').start()" />
-					</h:commandButton>
-				</h:panelGrid>
-				<h:panelGrid columns="3" styleClass="useractionmargin">
-					<h:commandButton id="callbutton" value="コール"
-						disabled="#{gameBean.callBtnDisabled}"
-						actionListener="#{gameMainActionBean.callAction()}">
-						<f:ajax render="timers gamedisp" onevent="PF('stepBetRoundTimer').start()" />
-					</h:commandButton>
-					<h:commandButton id="checkbutton" value="チェック"
-						disabled="#{gameBean.checkBtnDisabled}"
-						actionListener="#{gameMainActionBean.checkAction()}">
-						<f:ajax render="timers gamedisp" onevent="PF('stepBetRoundTimer').start()" />
-					</h:commandButton>
-					<h:commandButton id="foldbutton" value="フォールド"
-						disabled="#{gameBean.foldBtnDisabled}"
-						actionListener="#{gameMainActionBean.foldAction()}">
-						<f:ajax render="timers gamedisp" />
-					</h:commandButton>
-				</h:panelGrid>
-			</div>
-			<div id="userHandAndBlind" class="userhandandblind">
-				<table class="user">
-					<tr>
-						<td class="betposition" id="userbetposition"><h:outputText
-								value="#{gameBean.userBlind}" /></td>
-						<td>あなたの手札</td>
-					</tr>
-				</table>
-				<p>
-					<h:graphicImage styleClass="cardimgc"
-						value="${'/resources/images/'+=gameBean.userCard[0]+='.png'}" />
-					<h:graphicImage styleClass="cardimgb"
-						value="${'/resources/images/'+=gameBean.userCard[1]+='.png'}" />
-				</p>
-			</div>
-			<div class="userinfo" id="userInfoDisp">
-				<p>ユーザー情報</p>
-				<table class="usertable">
-					<tr>
-						<td class="usertabletda">ユーザー名 ：</td>
-						<td class="usertabletdb"><h:outputText
-								value="#{userBean.userName}" /></td>
-					</tr>
-					<tr>
-						<td class="usertabletda">所持ポイント ：</td>
-						<td class="usertabletdb" id="userpoint"><h:outputText
-								value="#{gameBean.userPoint}" /></td>
-					</tr>
-					<tr>
-						<td class="usertabletda">合計ベット ：</td>
-						<td class="usertabletdb" id="totalbetpoint"><h:outputText
-								value="#{gameBean.userTotalBetPoint}" /></td>
-					</tr>
-					<tr>
-						<td class="usertabletda">現在の成立役 ：</td>
-						<td class="usertabletdb" id="usercard"><h:outputText
-								value="#{gameBean.userHand}" /></td>
-					</tr>
-				</table>
-			</div>
-			<c:if test="${gameBean.battleResultOfRound == '勝ち'}">
-				<h:commandButton value="You WIN!!"
-					actionListener="#{gameMainActionBean.stepBetRound()}">
-					<f:ajax render="timers gamedisp" onevent="PF('stepRoundTimer').start()" />
-				</h:commandButton>
-			</c:if>
-			<c:if test="${gameBean.battleResultOfRound == '負け'}">
-				<h:commandButton value="You LOSE・・・"
-					actionListener="#{gameMainActionBean.stepBetRound()}">
-					<f:ajax render="timers gamedisp" onevent="PF('stepRoundTimer').start()" />
-				</h:commandButton>
-			</c:if>
-			<c:if test="${gameBean.battleResultOfRound == '引き分け'}">
-				<h:commandButton value="DRAW・・・"
-					actionListener="#{gameMainActionBean.stepBetRound()}">
-					<f:ajax render="timers gamedisp" onevent="PF('stepRoundTimer').start()" />
-				</h:commandButton>
-			</c:if>
-			<c:if test="${gameBean.battleResult == '勝ち'}">
-				<h:outputText value="You WIN!!" />
-				<h:commandButton value="Good Bye!"
-					action="#{gameMainActionBean.gameFinish()}">
-				</h:commandButton>
-			</c:if>
-			<c:if test="${gameBean.battleResult == '負け'}">
-				<h:outputText value="You LOSE・・・" />
-				<h:commandButton value="Good Bye!"
-					action="#{gameMainActionBean.gameFinish()}">
-				</h:commandButton>
-			</c:if>
-			<c:if test="${gameBean.battleResult == '引き分け'}">
-				<h:outputText value="DRAW・・・" />
-				<h:commandButton value="Good Bye!"
-					action="#{gameMainActionBean.gameFinish()}">
-				</h:commandButton>
-			</c:if>
-		</h:form>
-	</div>
-</h:body>
+            <pe:timer timeout="2" singleRun="false"
+                      listener="#{gameMainActionBean.stepRound()}"
+                      visible="false"
+                      update="gamedisp"
+                      autoStart="false" widgetVar="stepRound"
+                      onsuccess="PF('stepRound').stop(true)" />
+        </h:form>
+        <div class="gamemain">
+            <h:form>
+                <p:commandButton id="hiddenButton" actionListener="#{gameMainActionBean.onShowDialog()}"
+                                 style="visibility: hidden"/>
+            </h:form>
+            <h:form id="gamedisp">
+                <div class="round">
+                    <table>
+                        <tr>
+                            <td><h:outputText value="ROUND" /></td>
+                            <td class="roundtd" id="roundnumber"><h:outputText
+                                    value="#{gameBean.round}" /></td>
+                        </tr>
+                    </table>
+                    <p class="betround" id="betround">
+                        <h:outputText value="#{gameBean.betRound}" />
+                    </p>
+                </div>
+                <div id="gameInfoDisp" class="opponentInfo">
+                    <table class="opponent">
+                        <tr>
+                            <td class="betposition" id="betposition"><h:outputText
+                                    value="#{gameBean.opponentBlind}" /></td>
+                            <td>対戦相手:</td>
+                            <td><h:outputText value="#{gameBean.opponentName}" /></td>
+                            <td>所持ポイント:</td>
+                            <td id="opponentpoint"><h:outputText
+                                    value="#{gameBean.opponentPoint}" /></td>
+                        </tr>
+                    </table>
+                    <p>
+                        <c:if test="${gameBean.betRound == 'ショーダウン'}" var="flg1" />
+                        <c:if test="${flg1}">
+                            <h:graphicImage styleClass="cardimgc"
+                                            value="${'/resources/images/'+=gameBean.opponentCard[0]+='.png'}" />
+                            <h:graphicImage styleClass="cardimgb"
+                                            value="${'/resources/images/'+=gameBean.opponentCard[1]+='.png'}" />
+                        </c:if>
+                        <c:if test="${!flg1}">
+                            <h:graphicImage styleClass="cardimgc"
+                                            value="/resources/images/z02.png" />
+                            <h:graphicImage styleClass="cardimgb"
+                                            value="/resources/images/z02.png" />
+                        </c:if>
+                    </p>
+                </div>
+                <div class="potinfo" id="potInfo">
+                    <p>ポット</p>
+                    <p id="pot">
+                        <h:outputText value="#{gameBean.potPoint}" />
+                    </p>
+                </div>
+                <div id="information" class="informations">
+                    <table class="information">
+                        <tr>
+                            <td class="information1">information:</td>
+                            <td class="information2">あいて</td>
+                            <td class="information3" id="action"><h:outputText
+                                    value="#{gameBean.opponentActionMsg}" /></td>
+                            <td class="information4" id="lastcard"><h:outputText
+                                    value="#{gameBean.opponentHand}" /></td>
+                        </tr>
+                    </table>
+                    <p class="voicea"></p>
+                    <p class="board">
+                        <c:if test="${gameBean.betRound == 'プリフロップ'}">
+                            <h:graphicImage styleClass="cardimga"
+                                            value="/resources/images/z02.png" />
+                            <h:graphicImage styleClass="cardimgb"
+                                            value="/resources/images/z02.png" />
+                            <h:graphicImage styleClass="cardimgb"
+                                            value="/resources/images/z02.png" />
+                            <h:graphicImage styleClass="cardimgb"
+                                            value="/resources/images/z02.png" />
+                            <h:graphicImage styleClass="cardimgb"
+                                            value="/resources/images/z02.png" />
+                        </c:if>
+                        <c:if test="${gameBean.betRound == 'フロップ'}">
+                            <h:graphicImage styleClass="cardimga"
+                                            value="${'/resources/images/'+=gameBean.bordInfo[0]+='.png'}" />
+                            <h:graphicImage styleClass="cardimgb"
+                                            value="${'/resources/images/'+=gameBean.bordInfo[1]+='.png'}" />
+                            <h:graphicImage styleClass="cardimgb"
+                                            value="${'/resources/images/'+=gameBean.bordInfo[2]+='.png'}" />
+                            <h:graphicImage styleClass="cardimgb"
+                                            value="/resources/images/z02.png" />
+                            <h:graphicImage styleClass="cardimgb"
+                                            value="/resources/images/z02.png" />
+                        </c:if>
+                        <c:if test="${gameBean.betRound == 'ターン'}">
+                            <h:graphicImage styleClass="cardimga"
+                                            value="${'/resources/images/'+=gameBean.bordInfo[0]+='.png'}" />
+                            <h:graphicImage styleClass="cardimgb"
+                                            value="${'/resources/images/'+=gameBean.bordInfo[1]+='.png'}" />
+                            <h:graphicImage styleClass="cardimgb"
+                                            value="${'/resources/images/'+=gameBean.bordInfo[2]+='.png'}" />
+                            <h:graphicImage styleClass="cardimgb"
+                                            value="${'/resources/images/'+=gameBean.bordInfo[3]+='.png'}" />
+                            <h:graphicImage styleClass="cardimgb"
+                                            value="/resources/images/z02.png" />
+                        </c:if>
+                        <c:if
+                            test="${gameBean.betRound == 'リバー' || gameBean.betRound == 'ショーダウン'}">
+                            <h:graphicImage styleClass="cardimga"
+                                            value="${'/resources/images/'+=gameBean.bordInfo[0]+='.png'}" />
+                            <h:graphicImage styleClass="cardimgb"
+                                            value="${'/resources/images/'+=gameBean.bordInfo[1]+='.png'}" />
+                            <h:graphicImage styleClass="cardimgb"
+                                            value="${'/resources/images/'+=gameBean.bordInfo[2]+='.png'}" />
+                            <h:graphicImage styleClass="cardimgb"
+                                            value="${'/resources/images/'+=gameBean.bordInfo[3]+='.png'}" />
+                            <h:graphicImage styleClass="cardimgb"
+                                            value="${'/resources/images/'+=gameBean.bordInfo[4]+='.png'}" />
+                        </c:if>
+                    </p>
+                    <table class="information">
+                        <tr>
+                            <td class="information1">information:</td>
+                            <td class="information2">あなた</td>
+                            <td class="information3" id="useraction"><h:outputText
+                                    value="#{gameBean.userActionMsg}" /></td>
+                            <td class="information4" id="userlastcard"><h:outputText
+                                    value="#{gameBean.userSituation}" /></td>
+                        </tr>
+                    </table>
+                </div>
+                <div class="useraction" id="userAction">
+                    <h:panelGrid columns="3">
+                        <p:slider minValue="#{gameBean.betMin}"
+                                  maxValue="#{gameBean.userPoint}" for="betarea" styleClass="slider"
+                                  disabled="#{gameBean.betBtnDisabled}">
+                            <p:ajax event="slideEnd" process="betarea" />
+                        </p:slider>
+                        <p:inputText id="betarea" styleClass="inputText"
+                                     value="#{gameBean.userBetPoint}"
+                                     disabled="#{gameBean.betBtnDisabled}">
+                            <f:validateLongRange minimum="1" maximum="#{gameBean.userPoint}" />
+                        </p:inputText>
+                        <h:commandButton value="ベット" disabled="#{gameBean.betBtnDisabled}"
+                                         actionListener="#{gameMainActionBean.betAction()}">
+                            <f:ajax execute="timers betarea" render="timers gamedisp"
+                                    onevent="PF('stepBetRoundTimer').start()" />
+                        </h:commandButton>
+                    </h:panelGrid>
+                    <h:panelGrid columns="3" styleClass="useractionmargin">
+                        <p:slider minValue="#{gameBean.raiseMin}"
+                                  maxValue="#{gameBean.userPoint}" for="raisearea"
+                                  onSlideStart="#{gameBean.raiseMin}" styleClass="slider"
+                                  disabled="#{gameBean.raiseBtnDisabled}">
+                            <p:ajax event="slideEnd" process="raisearea" />
+                        </p:slider>
+                        <p:inputText id="raisearea" styleClass="inputText"
+                                     value="#{gameBean.userRaisePoint}"
+                                     disabled="#{gameBean.raiseBtnDisabled}">
+                            <f:validateLongRange minimum="#{gameBean.raiseMin}"
+                                                 maximum="#{gameBean.userPoint}" />
+                        </p:inputText>
+                        <h:commandButton value="レイズ"
+                                         disabled="#{gameBean.raiseBtnDisabled}"
+                                         actionListener="#{gameMainActionBean.raiseAction()}">
+                            <f:ajax execute="timers raisearea" render="timers gamedisp"
+                                    onevent="PF('stepBetRoundTimer').start()" />
+                        </h:commandButton>
+                    </h:panelGrid>
+                    <h:panelGrid columns="3" styleClass="useractionmargin">
+                        <h:commandButton id="callbutton" value="コール"
+                                         disabled="#{gameBean.callBtnDisabled}"
+                                         actionListener="#{gameMainActionBean.callAction()}">
+                            <f:ajax render="timers gamedisp" onevent="PF('stepBetRoundTimer').start()" />
+                        </h:commandButton>
+                        <h:commandButton id="checkbutton" value="チェック"
+                                         disabled="#{gameBean.checkBtnDisabled}"
+                                         actionListener="#{gameMainActionBean.checkAction()}">
+                            <f:ajax render="gamedisp"/>
+                        </h:commandButton>
+                        <h:commandButton id="foldbutton" value="フォールド"
+                                         disabled="#{gameBean.foldBtnDisabled}"
+                                         actionListener="#{gameMainActionBean.foldAction()}">
+                            <f:ajax render="timers gamedisp" />
+                        </h:commandButton>
+                    </h:panelGrid>
+                </div>
+                <div id="userHandAndBlind" class="userhandandblind">
+                    <table class="user">
+                        <tr>
+                            <td class="betposition" id="userbetposition"><h:outputText
+                                    value="#{gameBean.userBlind}" /></td>
+                            <td>あなたの手札</td>
+                        </tr>
+                    </table>
+                    <p>
+                        <h:graphicImage styleClass="cardimgc"
+                                        value="${'/resources/images/'+=gameBean.userCard[0]+='.png'}" />
+                        <h:graphicImage styleClass="cardimgb"
+                                        value="${'/resources/images/'+=gameBean.userCard[1]+='.png'}" />
+                    </p>
+                </div>
+                <div class="userinfo" id="userInfoDisp">
+                    <p>ユーザー情報</p>
+                    <table class="usertable">
+                        <tr>
+                            <td class="usertabletda">ユーザー名 ：</td>
+                            <td class="usertabletdb"><h:outputText
+                                    value="#{userBean.userName}" /></td>
+                        </tr>
+                        <tr>
+                            <td class="usertabletda">所持ポイント ：</td>
+                            <td class="usertabletdb" id="userpoint"><h:outputText
+                                    value="#{gameBean.userPoint}" /></td>
+                        </tr>
+                        <tr>
+                            <td class="usertabletda">合計ベット ：</td>
+                            <td class="usertabletdb" id="totalbetpoint"><h:outputText
+                                    value="#{gameBean.userTotalBetPoint}" /></td>
+                        </tr>
+                        <tr>
+                            <td class="usertabletda">現在の成立役 ：</td>
+                            <td class="usertabletdb" id="usercard"><h:outputText
+                                    value="#{gameBean.userHand}" /></td>
+                        </tr>
+                    </table>
+                </div>
+            </h:form>
+        </div>
+        <p:dialog widgetVar="roundWinDialog" modal="true" class="dialog" closable="false">
+            <h:outputText value="このラウンドはあなたの勝ちです。" />
+            <h:form>
+                <h:commandButton value="次のラウンドへ" styleClass="gamemaindaialogbutton"
+                                 actionListener="#{gameMainActionBean.stepBetRound()}">
+                    <f:ajax render="timers gamedisp" onevent="roundWinDialogHide()" />
+                </h:commandButton>
+            </h:form>
+        </p:dialog>
+        <p:dialog widgetVar="roundLoseDialog" modal="true" class="dialog" closable="false">
+            <h:outputText value="このラウンドはあなたの負けです・・・" />
+            <h:form>
+                <h:commandButton value="次のラウンドへ" styleClass="gamemaindaialogbutton"
+                                 actionListener="#{gameMainActionBean.stepBetRound()}">
+                    <f:ajax render="timers gamedisp" onevent="roundLoseDialogHide()" />
+                </h:commandButton>
+            </h:form>
+        </p:dialog>
+        <p:dialog widgetVar="roundDrawDialog" modal="true" class="dialog" closable="false">
+            <h:outputText value="このラウンドは引き分けです・・・" />
+            <h:form>
+                <h:commandButton value="次のラウンドへ" styleClass="gamemaindaialogbutton"
+                                 actionListener="#{gameMainActionBean.stepBetRound()}">
+                    <f:ajax render="timers gamedisp" onevent="roundDrawDialogHide()" />
+                </h:commandButton>
+            </h:form>
+        </p:dialog>
+        <p:dialog widgetVar="gameWinDialog" modal="true" class="dialog" closable="false">
+            <h:outputText value="ゲームの終了をお知らせします" />
+            <p>
+                <h:outputText value="You WIN!!" />
+            </p>
+            <h:form>
+                <h:commandButton value="Good Bye!" styleClass="gamemaindaialogbutton"
+                                 action="#{gameMainActionBean.gameFinish()}">
+                </h:commandButton>
+            </h:form>
+        </p:dialog>
+        <p:dialog widgetVar="gameLoseDialog" modal="true" class="dialog" closable="false">
+            <h:outputText value="ゲームの終了をお知らせします" />
+            <p>
+                <h:outputText value="You LOSE・・・" />
+            </p>
+            <h:form>
+                <h:commandButton value="Good Bye!" styleClass="gamemaindaialogbutton"
+                                 action="#{gameMainActionBean.gameFinish()}">
+                </h:commandButton>
+            </h:form>
+        </p:dialog>
+        <p:dialog widgetVar="gameDrawDialog" modal="true" class="dialog" closable="false">
+            <h:outputText value="ゲームの終了をお知らせします" />
+            <p>
+                <h:outputText value="DRAW・・・" />
+            </p>
+            <h:form>
+                <h:commandButton value="Good Bye!" styleClass="gamemaindaialogbutton"
+                                 action="#{gameMainActionBean.gameFinish()}">
+                </h:commandButton>
+            </h:form>
+        </p:dialog>
+    </h:body>
 </html>
